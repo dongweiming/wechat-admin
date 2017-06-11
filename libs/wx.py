@@ -31,7 +31,7 @@ from wxpy import * # noqa
 def get_bot():
     bot = Bot('bot.pkl', qr_path=os.path.join(
         here, '../static/img/qr_code.png'))
-    bot.enable_puid('wxpy_puid.pkl')
+    bot.enable_puid()
     return bot
 
 
@@ -97,7 +97,7 @@ def retrieve_data(update=False):
                 if need_update:
                     try:
                         u.get_avatar(path)
-                    except ResponseError:
+                    except (ResponseError, KeyError):
                         print('No member: {}'.format(u.puid))
         need_del = local_ids.difference(wx_ids)
         if need_del:

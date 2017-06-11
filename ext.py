@@ -3,6 +3,9 @@ from datetime import datetime
 from flask_sse import sse
 from sqlalchemy import Column, DateTime
 from flask_sqlalchemy import SQLAlchemy, Model
+from flask_redis import FlaskRedis
+
+store = FlaskRedis()
 
 
 class BaseModel(Model):

@@ -1,5 +1,5 @@
 # coding=utf-8
-from flask import Flask, json, request
+from flask import Flask, request
 from flask.views import MethodView
 from sqlalchemy import and_
 from itchat.signals import scan_qr_code, confirm_login, logged_in
@@ -8,10 +8,11 @@ import config
 import views.errors as errors
 from views.utils import ApiResult
 from views.exceptions import ApiException
+import views.settings as settings
 from libs.tasks import async_retrieve_data
 from libs.globals import current_bot, _wx_ctx_stack
 from libs.wx import get_logged_in_user
-from ext import db, sse
+from ext import db, sse, store
 
 from models.core import User, Group, friendship, group_relationship
 
@@ -33,6 +34,9 @@ def create_app():
      app = ApiFlask(__name__)
      app.config.from_object(config)
      db.init_app(app)
+     store.init_app(app)
+
+     app.register_blueprint(settings.bp)
 
      return app
 
@@ -81,49 +85,80 @@ def logout():
     return {'msg': ''}
 
 
-@json_api.route('/users')
-def users():
-    page = request.args.get('page', 1, type=int)
-    page_size = request.args.get('page_size', 20, type=int)
-    type = request.args.get('type', 'contact')
-    q = request.args.get('q', '')
-    uid = current_bot.self.puid
-    query = db.session.query
-    if type == 'contact':
-        user = query(User).get(uid)
-        if q:
-            users = query(User).outerjoin(
-                friendship, friendship.c.user_id==User.id).filter(and_(
-                    User.nick_name.like('%{}%'.format(q)),
-                    friendship.c.friend_id==user.id)
-                )
-        else:
-            users = user.friends
-        total = users.count()
-        users = users.offset((page-1)*page_size).limit(page_size).all()
-        group = ''
-    elif type == 'group':
-        group_id = request.args.get('gid', '')
-        group = query(Group).get(group_id)
-        if q:
-            users = query(User).outerjoin(
-                group_relationship,
-                group_relationship.c.user_id==User.id).filter(and_(
-                    User.nick_name.like('%{}%'.format(q)),
-                    group_relationship.c.group_id==group.id)
-                )
+class UsersAPI(MethodView):
+    def get(self):
+        page = request.args.get('page', 1, type=int)
+        page_size = request.args.get('page_size', 20, type=int)
+        type = request.args.get('type', 'contact')
+        q = request.args.get('q', '')
+        uid = current_bot.self.puid
+        query = db.session.query
+        if type == 'contact':
+            user = query(User).get(uid)
+            if q:
+                users = query(User).outerjoin(
+                    friendship, friendship.c.user_id==User.id).filter(and_(
+                        User.nick_name.like('%{}%'.format(q)),
+                        friendship.c.friend_id==user.id)
+                    )
+            else:
+                users = user.friends
             total = users.count()
             users = users.offset((page-1)*page_size).limit(page_size).all()
-        else:
-            users = group.members[(page-1)*page_size:page*page_size]
-            total = group.count
-        group = group.to_dict()
-    return {
-        'total': total,
-        'group': group,
-        'users': [user.to_dict() for user in users]
-    }
+            group = ''
+        elif type == 'group':
+            group_id = request.args.get('gid', '')
+            group = query(Group).get(group_id)
+            if q:
+                users = query(User).outerjoin(
+                    group_relationship,
+                    group_relationship.c.user_id==User.id).filter(and_(
+                        User.nick_name.like('%{}%'.format(q)),
+                        group_relationship.c.group_id==group.id)
+                    )
+                total = users.count()
+                users = users.offset((page-1)*page_size).limit(page_size).all()
+            else:
+                users = group.members[(page-1)*page_size:page*page_size]
+                total = group.count
+            group = group.to_dict()
+        return {
+            'total': total,
+            'group': group,
+            'users': [user.to_dict() for user in users]
+        }
+    def put(self):
+        verify_content = request.args.get('verifyContent', '')
+        ids = set(request.args.getlist('wxid[]'))
+        users = [u for u in sum([g.members for g in current_bot.groups()], [])
+                if u.puid in ids]
+        if users is None:
+            raise ApiException(errors.not_found)
+        for user in users:
+            pass
+            # current_bot.add_friend(user, verify_content)
+        unexpected = ids.difference(set([u.id for u in users]))
+        if unexpected:
+            raise ApiException(
+                errors.not_found,
+                '如下puid用户未找到: {}'.format(','.join(unexpected)))
+        return {}
 
+    def delete(self):
+        type = request.args.get('type')
+        if type == 'contact':
+            raise ApiException(errors.unimplemented_error,
+                               'ItChat不支持删除好友')
+        elif type == 'group':
+            group_id = request.args.get('gid')
+            ids = request.args.get('ids')
+            group = current_bot.groups().search(puid=group_id)
+            if not group:
+                raise ApiException(errors.not_found)
+            group = group[0]
+            for uid in ids:
+                group.remove_members(group.members.search(puid=uid))
+            return {}
 
 @json_api.route('/groups')
 def groups():
@@ -184,3 +219,4 @@ def all_users():
 
 
 json_api.add_url_rule('/user/<id>', view_func=UserAPI.as_view('user'))
+json_api.add_url_rule('/users', view_func=UsersAPI.as_view('users'))

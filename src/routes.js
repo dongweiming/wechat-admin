@@ -5,6 +5,7 @@ import Main from './views/Main.vue'
 
 import Contact from './views/users/Contact.vue'
 import Group from './views/groups/Group.vue'
+import SettingsGroup from './views/settings/SettingsGroup.vue'
 import GroupMember from './views/groups/GroupMember.vue'
 
 let routes = [
@@ -47,6 +48,15 @@ let routes = [
         children: [
             { path: '/groups', component: Group, name: '我的群聊' },
             { path: '/group/:id', component: GroupMember, name: '群聊成员列表', hidden: true },
+        ]
+    },
+    {
+        path: '/',
+        component: Home,
+        name: '设置',
+        iconCls: 'fa fa-id-card-o',
+        children: [
+            { path: '/settings/group', component: SettingsGroup, name: '群聊设置' },
         ]
     },
     {

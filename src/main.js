@@ -12,9 +12,12 @@ import routes from './routes'
 //Mock.bootstrap();
 import 'font-awesome/css/font-awesome.min.css'
 
+import Wechat from './plugins/wechat';
+
 Vue.use(ElementUI)
 Vue.use(VueRouter)
 Vue.use(Vuex)
+Vue.use(Wechat)
 
 const router = new VueRouter({
   routes

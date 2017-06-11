@@ -3,10 +3,14 @@ from flask import json
 from werkzeug.wrappers import Response
 
 
-def datetime_handler(x):
-    if isinstance(x, datetime):
-        return x.isoformat()
-    raise TypeError('Unknown type')
+class DateTimeEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, datetime):
+            return o.isoformat()
+        elif isinstance(o, bytes):
+            return o.decode('utf-8')
+
+        return json.JSONEncoder.default(self, o)
 
 
 class ApiResult(object):
@@ -14,6 +18,6 @@ class ApiResult(object):
         self.value = value
         self.status = status
     def to_response(self):
-        return Response(json.dumps(self.value, default=datetime_handler),
+        return Response(json.dumps(self.value, cls=DateTimeEncoder),
                         status=self.status,
                         mimetype='application/json')

@@ -75,7 +75,7 @@
 </template>
 
 <script>
-	import { getUserList, removeUser, addUser, batchRemoveUser, getAllUsers } from '../../api/api';
+	import { getUserList, removeUser, addUser, addUsers, batchRemoveUser, getAllUsers } from '../../api/api';
 
 	export default {
 		data() {
@@ -148,7 +148,7 @@
 					let para = { type: this.queryType };
 					removeUser(row.id, para).then((res) => {
 						this.listLoading = false;
-						this.validate(res);
+						this.checkStatus(res);
 						this.getUsers();
 					});
 				}).catch(() => {
@@ -181,30 +181,16 @@
         }
       },
 
-      validate(res) {
-        let { r, msg } = res.data;
-        let type, message;
-        if (r !== 0) {
-          type = 'error';
-          message = msg;
-        } else {
-          type = 'success';
-          message = '提交成功';
-        }
-        this.$message({
-          message: message,
-          type: type
-        });
-			},
 			addSubmit: function () {
 				this.$refs.addForm.validate((valid) => {
 					if (valid) {
 						this.$confirm('确认提交吗？', '提示', {}).then(() => {
 							this.addLoading = true;
 							let para = Object.assign({}, this.addForm);
-							addUser(para).then((res) => {
+              let func = this.addForm.wxid.length == 1 ? addUser : addUsers;
+							func(para).then((res) => {
 								this.addLoading = false;
-                this.validate(res);
+                this.checkStatus(res);
 								this.$refs['addForm'].resetFields();
 								this.addFormVisible = false;
 								this.getUsers();
@@ -226,7 +212,7 @@
 					let para = { ids: ids, type: this.queryType };
 					batchRemoveUser(para).then((res) => {
 						this.listLoading = false;
-						this.validate(res);
+						this.checkStatus(res);
 						this.getUsers();
 					});
 				}).catch(() => {

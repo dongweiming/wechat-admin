@@ -14,4 +14,4 @@ def retrieve_data():
 
 
 def async_retrieve_data(bot):
-    return q.enqueue(retrieve_data, timeout=240)
+    return q.enqueue(retrieve_data, timeout=1200)
