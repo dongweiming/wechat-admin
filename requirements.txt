@@ -6,4 +6,4 @@ itchat==1.2.32
 rq==0.7.1
 PyMySQL==0.7.11
 gunicorn==19.7.1
-flask-redis==0.3.0
+-e git+https://github.com/dongweiming/redisco@master#egg=redisco

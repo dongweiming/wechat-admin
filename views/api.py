@@ -12,7 +12,7 @@ import views.settings as settings
 from libs.tasks import async_retrieve_data
 from libs.globals import current_bot, _wx_ctx_stack
 from libs.wx import get_logged_in_user
-from ext import db, sse, store
+from ext import db, sse
 
 from models.core import User, Group, friendship, group_relationship
 
@@ -34,7 +34,6 @@ def create_app():
      app = ApiFlask(__name__)
      app.config.from_object(config)
      db.init_app(app)
-     store.init_app(app)
 
      app.register_blueprint(settings.bp)
 

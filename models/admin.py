@@ -1,15 +1,12 @@
 # coding=utf-8
-from ext import store
+from redisco import models
 
-GROUP_CREATOR_MC_KEY = 'group:creators'
+from .base import RBase
 
 
-class GroupSettings():
-    @staticmethod
-    def get_creators():
-        return store.lrange(GROUP_CREATOR_MC_KEY, 0, -1)
-
-    @staticmethod
-    def set_creators(creators):
-        store.delete(GROUP_CREATOR_MC_KEY)
-        return store.rpush(GROUP_CREATOR_MC_KEY, *creators)
+class GroupSettings(RBase):
+    id = models.Attribute(required=True)
+    welcome_text = models.Attribute(default='')
+    invite_text = models.Attribute(default='')
+    group_tmpl = models.Attribute(default='')
+    creators = models.ListField(str, default=[])

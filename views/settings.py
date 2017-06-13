@@ -21,19 +21,20 @@ class GroupAPI(MethodView):
         users = user.friends
         total = users.count()
         users = users.all()
-        creators = GroupSettings.get_creators()
 
-        return {
+        data = {
             'total': total,
-            'creators': creators,
             'users': [user.to_dict() for user in users]
         }
+        settings = GroupSettings.get(uid)
+        data.update(settings)
+        return data
 
     def put(self):
-        creator_ids = request.get_json().get('creators', [])
-        creator_ids = [id for id in creator_ids if id != '{}']
-        GroupSettings.set_creators(creator_ids)
+        data = request.get_json()
+        data['id'] = current_bot.self.puid
+        GroupSettings.create_or_update(**data)
         return {}
 
 
-bp.add_url_rule('/group', view_func=GroupAPI.as_view('users'))
+bp.add_url_rule('/group', view_func=GroupAPI.as_view('group_settings'))
