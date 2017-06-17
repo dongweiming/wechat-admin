@@ -103,7 +103,10 @@ class UsersAPI(MethodView):
             else:
                 users = user.friends
             total = users.count()
-            users = users.offset((page-1)*page_size).limit(page_size).all()
+            if not page:
+                users = users.all()
+            else:
+                users = users.offset((page-1)*page_size).limit(page_size).all()
             group = ''
         elif type == 'group':
             group_id = request.args.get('gid', '')
@@ -116,9 +119,16 @@ class UsersAPI(MethodView):
                         group_relationship.c.group_id==group.id)
                     )
                 total = users.count()
-                users = users.offset((page-1)*page_size).limit(page_size).all()
+                if not page:
+                    users = users.all()
+                else:
+                    users = users.offset((page-1)*page_size).limit(
+                        page_size).all()
             else:
-                users = group.members[(page-1)*page_size:page*page_size]
+                if not page:
+                    users = users.all()
+                else:
+                    users = group.members[(page-1)*page_size:page*page_size]
                 total = group.count
             group = group.to_dict()
         return {
@@ -134,8 +144,7 @@ class UsersAPI(MethodView):
         if users is None:
             raise ApiException(errors.not_found)
         for user in users:
-            pass
-            # current_bot.add_friend(user, verify_content)
+            current_bot.add_friend(user, verify_content)
         unexpected = ids.difference(set([u.id for u in users]))
         if unexpected:
             raise ApiException(
@@ -215,6 +224,31 @@ def all_users():
     users = [u.to_dict() for u in db.session.query(User).filter(
         User.id.in_(ids)).all()]
     return {'users': users}
+
+
+@json_api.route('/send_message', methods=['post'])
+def send_message():
+    data = request.get_json()
+    type = data['type']
+    ids = data['ids']
+    group_id = data['gid']
+    if type == 'group':
+        group = current_bot.groups().search(puid=group_id)
+        if not group:
+            raise ApiException(errors.not_found)
+        group = group[0]
+        users = group.members
+    else:
+        users = current_bot.friends()
+    users = [u for u in friends if u.puid in ids]
+    for user in users:
+        user.send_msg(content)
+    unexpected = ids.difference(set([u.id for u in users]))
+    if unexpected:
+        raise ApiException(
+            errors.not_found,
+            '如下puid用户未找到: {}'.format(','.join(unexpected)))
+    return {}
 
 
 json_api.add_url_rule('/user/<id>', view_func=UserAPI.as_view('user'))

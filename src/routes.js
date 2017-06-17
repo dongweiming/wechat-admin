@@ -5,8 +5,9 @@ import Main from './views/Main.vue'
 
 import Contact from './views/users/Contact.vue'
 import Group from './views/groups/Group.vue'
-import SettingsGroup from './views/settings/SettingsGroup.vue'
 import GroupMember from './views/groups/GroupMember.vue'
+import SendMsgToContact from './views/users/SendMsgToContact.vue'
+import SettingsGroup from './views/settings/SettingsGroup.vue'
 
 let routes = [
     {
@@ -37,7 +38,8 @@ let routes = [
         name: '用户',
         iconCls: 'el-icon-message',
         children: [
-            { path: '/contact', component: Contact, name: '联系人' },
+            { path: '/contact', component: Contact, name: '联系人列表' },
+            { path: '/send_msg/contact', component: SendMsgToContact, name: '群发消息' },
         ]
     },
     {

@@ -13,11 +13,14 @@ import routes from './routes'
 import 'font-awesome/css/font-awesome.min.css'
 
 import Wechat from './plugins/wechat';
+import {emoji} from './plugins/emoji/src/api/emoji.js';
 
 Vue.use(ElementUI)
 Vue.use(VueRouter)
 Vue.use(Vuex)
 Vue.use(Wechat)
+
+Vue.prototype.emoji = emoji;
 
 const router = new VueRouter({
   routes

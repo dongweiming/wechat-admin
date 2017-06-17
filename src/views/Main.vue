@@ -86,6 +86,7 @@ h2 {
       color: #45B6F7;
       border-bottom: 2px solid transparent;
       text-decoration: inherit;
+      cursor: pointer;
       &:hover, &:active {
         color: #FD8C84;
         border-bottom-color: #FD8C84;

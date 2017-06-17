@@ -83,7 +83,7 @@
         updateGroupSetings(para).then((res) => {
             this.$notify({
              title: 'Success',
-             message: '更新建群成员设置成功',
+             message: '更新群聊设置成功',
              type: 'success'
            });
            this.saveLoading = false;

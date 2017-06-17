@@ -4,7 +4,7 @@ let base = '';
 let NewBase = 'http://localhost:8100/j';
 
 const request = (url, options={}, method='get') => {
-    let key = method in ['delete', 'get', 'head'] ? 'params' : 'data';
+    let key = ~['delete', 'get', 'head'].indexOf(method) ? 'params' : 'data';
     return axios(Object.assign({'url': url, 'method':method}, {[key]: options})).then(
         res => res).catch((error) => {
             console.log(error);
@@ -63,6 +63,14 @@ const getAllUsers = () => {
     return request(`${NewBase}/all_users`);
 }
 
+const sendMessage = params => {
+    return request(`${NewBase}/send_message`, params, 'post');
+}
+
+const getAllGroups = () => {
+    return request(`${NewBase}/all_groups`);
+}
+
 module.exports = {
     requestLogin,
     requestLogout,
@@ -76,5 +84,7 @@ module.exports = {
     removeGroup,
     getAllUsers,
     getGroupSetings,
-    updateGroupSetings
+    updateGroupSetings,
+    sendMessage,
+    getAllGroups
 };
