@@ -170,24 +170,34 @@ class UsersAPI(MethodView):
                 group.remove_members(group.members.search(puid=uid))
             return {}
 
-@json_api.route('/groups')
-def groups():
-    page = request.args.get('page', 1, type=int)
-    page_size = request.args.get('page_size', 20, type=int)
-    q = request.args.get('q', '')
-    uid = current_bot.self.puid
-    query = db.session.query
-    if q:
-        groups = query(Group).filter(Group.nick_name.like('%{}%'.format(q)))
-        total = groups.count()
-    else:
-        groups = query(Group)
-        total = groups.count()
-    groups = groups.offset((page-1)*page_size).limit(page_size).all()
-    return {
-        'total': total,
-        'groups': [group.to_dict() for group in groups]
-    }
+
+class GroupsAPI(MethodView):
+
+    def get(self):
+        page = request.args.get('page', 1, type=int)
+        page_size = request.args.get('page_size', 20, type=int)
+        q = request.args.get('q', '')
+        uid = current_bot.self.puid
+        query = db.session.query
+        if q:
+            groups = query(Group).filter(Group.nick_name.like('%{}%'.format(q)))
+            total = groups.count()
+        else:
+            groups = query(Group)
+            total = groups.count()
+        groups = groups.offset((page-1)*page_size).limit(page_size).all()
+        return {
+            'total': total,
+            'groups': [group.to_dict() for group in groups]
+        }
+
+    def put(self):
+        data = request.get_json()
+        ids = data['ids']
+        name = data['name']
+        users = [u for u in current_bot.friends() if u.puid in ids]
+        current_bot.create_group(users, topic=name)
+        return {}
 
 
 class UserAPI(MethodView):
@@ -270,3 +280,4 @@ def send_message():
 
 json_api.add_url_rule('/user/<id>', view_func=UserAPI.as_view('user'))
 json_api.add_url_rule('/users', view_func=UsersAPI.as_view('users'))
+json_api.add_url_rule('/groups', view_func=GroupsAPI.as_view('groups'))

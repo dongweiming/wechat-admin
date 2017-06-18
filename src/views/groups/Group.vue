@@ -40,6 +40,7 @@
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
 			<el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量退出</el-button>
+      <el-button type="info" @click="sendMsg" :disabled="this.sels.length===0">发送消息</el-button>
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
@@ -68,6 +69,11 @@
 				this.page = val;
 				this.getGroups();
 			},
+      sendMsg () {
+        var ids = this.sels.map(item => item.id).toString();
+        this.$router.push({ path: '/send_msg/contact',
+            query: { ids: ids, type: 'group', gid: '', send_type: '' }})
+      },
 
 			getGroups() {
 				let para = {

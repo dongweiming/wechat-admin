@@ -59,6 +59,10 @@ const addUsers = params => {
     return request(`${NewBase}/users`, params, 'put');
 }
 
+const addGroup = params => {
+    return request(`${NewBase}/groups`, params, 'put');
+}
+
 const getAllUsers = () => {
     return request(`${NewBase}/all_users`);
 }
@@ -86,5 +90,6 @@ module.exports = {
     getGroupSetings,
     updateGroupSetings,
     sendMessage,
-    getAllGroups
+    getAllGroups,
+    addGroup
 };

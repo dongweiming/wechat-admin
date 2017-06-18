@@ -47,6 +47,8 @@
 		<!--工具条-->
 		<el-col :span="24" class="toolbar">
 			<el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
+      <el-button type="info" @click="sendMsg" :disabled="this.sels.length===0">发送消息</el-button>
+      <el-button type="warning" @click="createGroup" :disabled="this.sels.length<=2">创建新群</el-button>
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
@@ -75,7 +77,7 @@
 </template>
 
 <script>
-	import { getUserList, removeUser, addUser, addUsers, batchRemoveUser, getAllUsers } from '../../api/api';
+	import { getUserList, removeUser, addUser, addUsers, batchRemoveUser, getAllUsers, addGroup } from '../../api/api';
 
 	export default {
 		data() {
@@ -118,6 +120,11 @@
 			formatSex: function (row, column) {
 				return row.sex == 1 ? '男' : row.sex == 0 ? '女' : '未知';
 			},
+      sendMsg () {
+        var ids = this.sels.map(item => item.id).toString(); 
+        this.$router.push({ path: '/send_msg/contact',
+            query: { ids: ids, type: this.queryType, gid: this.gid || '' }})
+      },
 			handleCurrentChange(val) {
 				this.page = val;
 				this.getUsers();
@@ -197,11 +204,28 @@
 					}
 				});
 			},
-			selsChange: function (sels) {
+			selsChange (sels) {
 				this.sels = sels;
 			},
 
-			batchRemove: function () {
+      createGroup () {
+        var ids = this.sels.map(item => item.id).toString();
+        this.$prompt('群的名字', '提示', {
+          confirmButtonText: '创建',
+          cancelButtonText: '取消',
+          inputPattern: /\w/,
+          inputErrorMessage: '请输入群聊名字'
+        }).then(({ value }) => {
+           this.listLoading = true;
+           let para = { ids: ids, name: value };
+           addGroup(para).then((res) => {
+             this.listLoading = false;
+             this.checkStatus(res);
+             this.getUsers();
+           });
+         });
+      },
+			batchRemove () {
 				var ids = this.sels.map(item => item.id).toString();
 				this.$confirm('确认移除选中用户吗？', '提示', {
 					type: 'warning'
@@ -213,8 +237,6 @@
 						this.checkStatus(res);
 						this.getUsers();
 					});
-				}).catch(() => {
-
 				});
 			}
 		},

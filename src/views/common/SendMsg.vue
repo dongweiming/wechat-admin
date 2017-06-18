@@ -164,8 +164,14 @@
       let getMembers = true;
       let type = this.queryType;
       let ids = this.$route.query['ids'] || '';
+      if ('type' in this.$route.query) {
+        type = this.$route.query['type']
+      }
+      if ('send_type' in this.$route.query) {
+          this.sendType = true
+      }
       if (ids) {
-        this.users = ids.split(',');
+        this.ids = ids.split(',');
       }
 
       if (type === 'group') {
