@@ -170,14 +170,12 @@
 
       remoteMethod(query) {
         if (query !== '') {
-          setTimeout(() => {
             this.curOptions = this.allOptions.filter(item => {
               return item.label.split('|')[0].toLowerCase()
                 .indexOf(query.toLowerCase()) > -1;
             });
-          }, 200);
         } else {
-          this.curOptions = [];
+          this.curOptions = this.allOptions
         }
       },
 

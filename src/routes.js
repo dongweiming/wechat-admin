@@ -7,6 +7,7 @@ import Contact from './views/users/Contact.vue'
 import Group from './views/groups/Group.vue'
 import GroupMember from './views/groups/GroupMember.vue'
 import SendMsgToContact from './views/users/SendMsgToContact.vue'
+import SendMsgToGroup from './views/groups/SendMsgToGroup.vue'
 import SettingsGroup from './views/settings/SettingsGroup.vue'
 
 let routes = [
@@ -49,6 +50,7 @@ let routes = [
         iconCls: 'fa fa-id-card-o',
         children: [
             { path: '/groups', component: Group, name: '我的群聊' },
+            { path: '/send_msg/group', component: SendMsgToGroup, name: '发群消息' },
             { path: '/group/:id', component: GroupMember, name: '群聊成员列表', hidden: true },
         ]
     },

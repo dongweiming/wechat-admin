@@ -89,6 +89,9 @@ class UsersAPI(MethodView):
         page = request.args.get('page', 1, type=int)
         page_size = request.args.get('page_size', 20, type=int)
         type = request.args.get('type', 'contact')
+        group_id = request.args.get('gid', '')
+        if not group_id:
+            type = 'contact'
         q = request.args.get('q', '')
         uid = current_bot.self.puid
         query = db.session.query
@@ -109,7 +112,6 @@ class UsersAPI(MethodView):
                 users = users.offset((page-1)*page_size).limit(page_size).all()
             group = ''
         elif type == 'group':
-            group_id = request.args.get('gid', '')
             group = query(Group).get(group_id)
             if q:
                 users = query(User).outerjoin(
@@ -126,7 +128,7 @@ class UsersAPI(MethodView):
                         page_size).all()
             else:
                 if not page:
-                    users = users.all()
+                    users = group.members
                 else:
                     users = group.members[(page-1)*page_size:page*page_size]
                 total = group.count
@@ -226,6 +228,16 @@ def all_users():
     return {'users': users}
 
 
+@json_api.route('/all_groups')
+def all_groups():
+    uid = current_bot.self.puid
+    user = db.session.query(User).filter_by(id=uid).first()
+    if not user:
+        raise ApiException(errors.not_found)
+    groups = [group.to_dict() for group in user.groups]
+    return {'groups': groups}
+
+
 @json_api.route('/send_message', methods=['post'])
 def send_message():
     data = request.get_json()
@@ -233,14 +245,19 @@ def send_message():
     ids = data['ids']
     group_id = data['gid']
     if type == 'group':
-        group = current_bot.groups().search(puid=group_id)
-        if not group:
-            raise ApiException(errors.not_found)
-        group = group[0]
-        users = group.members
+        send_type = data['send_type']
+        groups = current_bot.groups()
+        if send_type == 'contact':
+            group = groups.search(puid=group_id)
+            if not group:
+                raise ApiException(errors.not_found)
+            group = group[0]
+            users = group.members
+        else:
+            users = sum([groups.search(puid=id) for id in ids], [])
     else:
         users = current_bot.friends()
-    users = [u for u in friends if u.puid in ids]
+    users = [u for u in users if u.puid in ids]
     for user in users:
         user.send_msg(content)
     unexpected = ids.difference(set([u.id for u in users]))

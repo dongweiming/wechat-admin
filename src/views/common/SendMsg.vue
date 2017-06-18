@@ -1,5 +1,6 @@
 <template>
   <div>
+  <p class="header"></p>
   <el-input
       type="textarea"
       :autosize="{ minRows: 5, maxRows: 10}"
@@ -27,9 +28,25 @@
     <el-dialog title="发送消息" :visible.sync="dialogVisible">
       <h4>你输入的内容是：</h4>
       <p v-html="emoji(content)" class="content"></p>
-      <h4>选择要发送的好友：</h4>
-      <el-transfer filterable :filter-method="filterMethod" filter-placeholder="请输入好友昵称" v-model="users" :data="allMembers" :titles="['好友列表', '已选好友']">
-      </el-transfer>
+
+      <div class="switch" v-if="queryType !== 'contact'">
+        <el-switch v-model="sendType" on-text="发给群聊" off-text="发给用户" on-color="#13ce66" off-color="#ff4949" width=100>
+        </el-switch>
+      </div>
+
+      <el-autocomplete v-if="!sendType && queryType !== 'contact'" v-model="group" placeholder="请输入群聊名字" :fetch-suggestions="querySearch" size="large" custom-item="msg-item" @select="handleSelectGroup">
+      </el-autocomplete>
+
+      <div v-if="!sendType">
+        <h4>选择要发送的好友：</h4>
+        <el-transfer filterable :filter-method="filterMethod" filter-placeholder="请输入好友昵称" v-model="ids" :data="allMembers" :titles="['好友列表', '已选好友']">
+        </el-transfer>
+      </div>
+      <div v-else>
+        <h4>选择要发送的群聊：</h4>
+        <el-transfer filterable :filter-method="filterMethod" filter-placeholder="请输入群聊昵称" v-model="ids" :data="allGroups" :titles="['群聊列表', '已选群聊']">
+        </el-transfer>
+      </div> 
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="submit">确 定</el-button>
@@ -42,9 +59,25 @@
 </template>
 
 <script>
+  import Vue from 'vue'
   import '../../plugins/emoji/src/assets/css/iconfont.css'
   import vueEmoji from '../../plugins/emoji/src/components/emoji.vue'
   import { getUserList, getAllGroups, sendMessage } from '../../api/api';
+
+  Vue.component('msg-item', {
+    functional: true,
+    render: function (h, ctx) {
+      var item = ctx.props.item;
+      return h('li', ctx.data, [
+        h('img', { attrs: { style: 'float: left; width: 38px; padding: 2px; margin-right: 5px',
+                            src: item.avatar } }),
+        h('span', { attrs: { style: '' } }, [item.label])
+      ]);
+    },
+    props: {
+      item: { type: Object, required: true }
+    }
+  });
 
 	export default {
 		data() {
@@ -53,19 +86,25 @@
         content: '',
         showEmoji: false,
         dialogVisible: false,
-        users: [],
+        ids: [],
+        sendType: false,
+        gid: '',
+        curOptions: [],
+        group: '',
+        groups: [],
         allMembers: [],
+        allGroups: [],
         filterMethod(query, item) {
            return item.label.indexOf(query) > -1;
         },
       }
 		},
-    props: ['queryType', 'gid'],
+    props: ['queryType'],
 		methods: {
       getMembers () {
          const users = [];
          let para = {
-           gid: this.gid || '',
+           gid: this.gid,
            page: 0,
            q: '',
            type: this.queryType
@@ -86,6 +125,10 @@
         this.content += code
         this.originalContent += `[${ emoji.replace(/\b\w/g, l => l.toUpperCase()) }]`;
       },
+      handleSelectGroup(item) {
+        this.gid = item.key;
+        this.getMembers();
+      },
       submit () {
         this.dialogVisible = false
         this.originalContent = ''
@@ -94,23 +137,63 @@
           type: this.queryType,
           gid: this.gid || '',
           content: this.originalContent,
-          ids: this.users
+          ids: this.ids,
+          send_type: this.sendType ? 'group': 'contact'
         }
         sendMessage(para).then((res) => {
-            this.listLoading = false;
-            this.$checkStatus(res);
-            this.getUsers();
-          });
+          this.$checkStatus(res);
+          this.getUsers();
+        });
+      },
+      querySearch(query, cb) {
+        let groups = this.allGroups;
+        var results = query ? groups.filter(this.createFilter(query)) : groups;
+        cb(results);
+      },
+      createFilter(query) {
+        return (item) => {
+          return item.label.toLowerCase()
+                .indexOf(query.toLowerCase()) > -1;
+        }
       }
 		},
     components: {
       vueEmoji
     },
     mounted() {
-      this.getMembers();
-    }
-	}
+      let getMembers = true;
+      let type = this.queryType;
+      let ids = this.$route.query['ids'] || '';
+      if (ids) {
+        this.users = ids.split(',');
+      }
 
+      if (type === 'group') {
+        let gid = this.$route.query['gid'] || '';
+        getAllGroups().then((res) => {
+          let groups = [];
+          res.data.groups.forEach((member, index) => {
+               groups.push({
+                 label: member.nick_name,
+                 key: member.id,
+                 value: member.nick_name,
+                 avatar: member.avatar
+               });
+             });
+             this.allGroups = groups;
+        });
+        if (gid) {
+          this.gid = gid;
+          getMembers = true;
+        } else {
+          getMembers = false; 
+        }
+      }
+      if (getMembers) {
+        this.getMembers();
+      }
+	}
+}
 </script>
 
 <style lang="scss" scoped>
@@ -119,6 +202,11 @@ ul{
   padding: 0;
   list-style: none;
 }
+
+.highlighted {
+  color: #ddd;
+}
+
 .el-dialog__title {
   font-size: 18px;
 }
@@ -184,7 +272,15 @@ h4, .content {
   border: 1px solid #eaeefb;
   padding: 10px;
 }
-.el-button--success {
+.el-button--success, .header {
   margin-top: 20px;
+}
+.switch {
+  display: inline-block;
+  margin-right: 30px;
+  height: 42px;
+  line-height: 42px;
+  vertical-align: baseline;
+  margin-bottom: 20px;
 }
 </style>
