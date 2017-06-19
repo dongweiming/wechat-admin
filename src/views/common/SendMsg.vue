@@ -6,7 +6,7 @@
       :autosize="{ minRows: 5, maxRows: 10}"
       placeholder="请输入内容"
       v-model="content" contenteditable="true">
-    </el-input>
+  </el-input>
   <div class="icon clearfix">
       <i class="icon iconfont icon-face" @click="showEmoji = !showEmoji"></i>
       <transition name="fade" mode="">
@@ -25,10 +25,27 @@
         </div>
       </transition>
     </div>
+    <div class="upload">
+      <el-upload :on-remove="handleRemove" :file-list="fileList"
+                 action="http://localhost:8100/upload" :on-change="handleChange">
+        <a class="document"><i class="el-icon-document"></i></a>
+      </el-upload>
+    </div>
     <el-dialog title="发送消息" :visible.sync="dialogVisible">
       <h4>你输入的内容是：</h4>
       <p v-html="emoji(content)" class="content"></p>
-
+      <ul class="el-upload-list el-upload-list--picture" v-if="fileList">
+        <li class="el-upload-list__item is-success" v-for="file in fileList">
+          <img :src="['http://localhost:8100/uploads/' + file.name]" class="el-upload-list__item-thumbnail">
+          <a class="el-upload-list__item-name">
+            <i class="el-icon-document"></i>{{ file.name }}
+          </a>
+          <label class="el-upload-list__item-status-label">
+            <i class="el-icon-upload-success el-icon-check"></i>
+          </label>
+          <i class="el-icon-close"></i>
+        </li>
+    </ul>
       <div class="switch" v-if="queryType !== 'contact'">
         <el-switch v-model="sendType" on-text="发给群聊" off-text="发给用户" on-color="#13ce66" off-color="#ff4949" width=100>
         </el-switch>
@@ -87,6 +104,7 @@
         showEmoji: false,
         dialogVisible: false,
         ids: [],
+        fileList: [],
         sendType: false,
         gid: '',
         curOptions: [],
@@ -129,6 +147,12 @@
         this.gid = item.key;
         this.getMembers();
       },
+      handleChange(_, fileList) {
+        this.fileList = fileList;
+      },
+      handleRemove(_, fileList) {
+        this.fileList = fileList;
+      },
       submit () {
         this.dialogVisible = false
         this.originalContent = ''
@@ -138,7 +162,8 @@
           gid: this.gid || '',
           content: this.originalContent,
           ids: this.ids,
-          send_type: this.sendType ? 'group': 'contact'
+          send_type: this.sendType ? 'group': 'contact',
+          files: this.fileList.map(item => item.name)
         }
         sendMessage(para).then((res) => {
           this.$checkStatus(res);
@@ -219,6 +244,7 @@ ul{
 .icon {
   position: relative;
   margin-top: 20px;
+  display: inline-block;
   .iconfont {
     cursor: pointer;
     color: #F7BA2A;
@@ -287,6 +313,20 @@ h4, .content {
   height: 42px;
   line-height: 42px;
   vertical-align: baseline;
+  margin-bottom: 20px;
+}
+.document {
+  margin-left: 4px;
+  color: #c0ccda;
+}
+
+.upload {
+  display: inline;
+  * {
+    display: inline;
+  }
+}
+.el-upload-list {
   margin-bottom: 20px;
 }
 </style>

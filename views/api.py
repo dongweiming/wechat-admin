@@ -1,4 +1,5 @@
 # coding=utf-8
+import os
 from flask import Flask, request
 from flask.views import MethodView
 from sqlalchemy import and_
@@ -254,6 +255,7 @@ def send_message():
     type = data['type']
     ids = data['ids']
     group_id = data['gid']
+    files = data['files']
     if type == 'group':
         send_type = data['send_type']
         groups = current_bot.groups()
@@ -270,6 +272,13 @@ def send_message():
     users = [u for u in users if u.puid in ids]
     for user in users:
         user.send_msg(content)
+        for filename in files:
+            suffix = filename.partition('.')[-1]
+            file = os.path.join(config.UPLOAD_FOLDER, filename)
+            if suffix in config.PIC_TYPES:
+                user.send_image(file)
+            else:
+                user.send_file(file)
     unexpected = ids.difference(set([u.id for u in users]))
     if unexpected:
         raise ApiException(

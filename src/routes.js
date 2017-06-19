@@ -26,7 +26,7 @@ let routes = [
     {
         path: '/',
         component: Home,
-        name: '主页',
+        name: 'Index',
         iconCls: 'fa fa-address-card',
         leaf: true,
         children: [

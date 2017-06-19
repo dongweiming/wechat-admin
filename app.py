@@ -1,7 +1,8 @@
 from collections import OrderedDict
 
 from flask import Flask
-from werkzeug.wsgi import DispatcherMiddleware
+from werkzeug.wsgi import DispatcherMiddleware, SharedDataMiddleware
+
 
 import config
 from ext import sse
@@ -17,6 +18,11 @@ def create_app():
     app.wsgi_app = DispatcherMiddleware(app.wsgi_app, OrderedDict((
         ('/j', json_api),
     )))
+    app.add_url_rule('/uploads/<filename>', 'uploaded_file',
+                     build_only=True)
+    app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {
+        '/uploads':  app.config['UPLOAD_FOLDER']
+    })
     return app
 
 
