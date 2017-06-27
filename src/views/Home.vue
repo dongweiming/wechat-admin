@@ -14,7 +14,7 @@
 					<span class="el-dropdown-link userinfo-inner"><img :src="this.sysUserAvatar" /> {{sysUserName}}</span>
 					<el-dropdown-menu slot="dropdown">
 						<el-dropdown-item>我的消息</el-dropdown-item>
-						<el-dropdown-item>设置</el-dropdown-item>
+						<el-dropdown-item @click.native="settings">设置</el-dropdown-item>
 						<el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
 					</el-dropdown-menu>
 				</el-dropdown>
@@ -104,8 +104,11 @@
 			},
 			handleselect: function (a, b) {
 			},
+      settings () {
+        this.$router.push('/settings/group');
+      },
 			//退出登录
-			logout: function () {
+			logout () {
 				var _this = this;
 				this.$confirm('确认退出吗?', '提示', {
 					//type: 'warning'
@@ -120,7 +123,7 @@
 
 			},
 			//折叠导航栏
-			collapse:function(){
+			collapse() {
 				this.collapsed=!this.collapsed;
 			},
 			showMenu(i,status){

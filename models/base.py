@@ -15,7 +15,7 @@ class RBase(redisco.models.Model):
             return False
         obj = cls.objects.get_by_id(id)
         if not obj:
-            return cls.get_or_create(**kw)
+            return cls.objects.get_or_create(**kw)
         obj.update_attributes(save=True, **kw)
         obj.save()
         return obj

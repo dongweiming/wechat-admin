@@ -32,6 +32,7 @@ def get_bot():
     bot = Bot('bot.pkl', qr_path=os.path.join(
         here, '../static/img/qr_code.png'))
     bot.enable_puid()
+    bot.messages.max_history = 0
     return bot
 
 
@@ -65,9 +66,8 @@ def gen_avatar_path(puid, force=False):
 def get_logged_in_user(bot):
     user_ = bot.self
     id = user_.puid
-    url, path, need_update = gen_avatar_path(id)
-    if need_update:
-        bot.core.get_head_img(path)
+    url, path, need_update = gen_avatar_path(id, force=True)
+    bot.core.get_head_img(path)
     user = {
         'id': id,
         'avatar': url,
@@ -131,3 +131,6 @@ def retrieve_data(update=False):
             if u.id in need_del:
                 myself.del_friend(u)
     session.commit()
+
+    from libs.listener import bot
+    bot.join()

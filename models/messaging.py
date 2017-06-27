@@ -1,9 +1,10 @@
 from ext import db
+from .mixin import BaseMixin
 
 
 class Log(db.Model):
     __tablename__ = 'logs'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     operator_id = db.Column(db.Integer)
     operator_type = db.Column(db.SmallInteger)
     payload = db.Column(db.PickleType)
@@ -17,19 +18,16 @@ class Log(db.Model):
         return '<Log %r>' % self.id
 
 
-class Message(db.Model):
+class Message(BaseMixin, db.Model):
     __tablename__ = 'messages'
     id = db.Column(db.Integer, primary_key=True)
-    group_id = db.Column(db.Integer, default=0, index=True)
-    sender_id = db.Column(db.Integer, index=True)
-    receiver_id = db.Column(db.Integer, index=True)
+    group_id = db.Column(db.String(20), default=0, index=True)
+    sender_id = db.Column(db.String(20), index=True)
+    receiver_id = db.Column(db.String(20), index=True)
     content = db.Column(db.String(255))
-
-    def __init__(self, group_id, sender_id, receiver_id, content):
-        self.group_id = group_id
-        self.sender_id = sender_id
-        self.receiver_id = receiver_id
-
+    receive_time = db.Column(db.DateTime)
+    type = db.Column(db.SmallInteger)
+    url = db.Column(db.String(255), default='')
 
     def __repr__(self):
         return '<Message %r>' % self.id

@@ -77,7 +77,7 @@
             'welcome_text': this.welcome_text,
             'invite_text': this.invite_text,
             'group_tmpl': this.group_tmpl,
-            'creators': this.users
+            'creators': this.users,
         };
         this.saveLoading = true;
         updateGroupSetings(para).then((res) => {

@@ -25,10 +25,12 @@
         if (!route.hidden && !route.leaf) {
           let sub_items = [];
           route.children.forEach(sub_route => {
-            sub_items.push({
-              name: sub_route.name,
-              path: sub_route.path
-            });
+            if (!sub_route.hidden) {
+              sub_items.push({
+                name: sub_route.name,
+                path: sub_route.path
+              });
+            }
           });
           this.items.push({
             title: route.name,

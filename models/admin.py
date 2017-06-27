@@ -10,3 +10,4 @@ class GroupSettings(RBase):
     invite_text = models.Attribute(default='')
     group_tmpl = models.Attribute(default='')
     creators = models.ListField(str, default=[])
+    creator_names = models.ListField(str, default=[])
