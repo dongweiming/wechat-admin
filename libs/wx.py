@@ -131,6 +131,3 @@ def retrieve_data(update=False):
             if u.id in need_del:
                 myself.del_friend(u)
     session.commit()
-
-    from libs.listener import bot
-    bot.join()

@@ -10,7 +10,6 @@ import views.errors as errors
 from views.utils import ApiResult
 from views.exceptions import ApiException
 import views.settings as settings
-from libs.tasks import async_retrieve_data
 from libs.globals import current_bot, _wx_ctx_stack
 from libs.wx import get_logged_in_user
 from ext import db, sse
@@ -75,7 +74,8 @@ def error_handler(error):
 def login():
     user = get_logged_in_user(current_bot)
     sse.publish({'type': 'logged_in', 'user': user}, type='login')
-    async_retrieve_data(current_bot)
+    from wechat.tasks import async_retrieve_data
+    async_retrieve_data()
     return {'msg': ''}
 
 
