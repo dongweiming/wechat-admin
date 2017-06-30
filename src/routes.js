@@ -3,6 +3,7 @@ import NotFound from './views/404.vue'
 import Home from './views/Home.vue'
 import Main from './views/Main.vue'
 
+import Message from './views/Message.vue'
 import Contact from './views/users/Contact.vue'
 import Group from './views/groups/Group.vue'
 import GroupMember from './views/groups/GroupMember.vue'
@@ -61,6 +62,15 @@ let routes = [
         iconCls: 'fa fa-id-card-o',
         children: [
             { path: '/settings/group', component: SettingsGroup, name: '群聊设置' },
+        ]
+    },
+    {
+        path: '/',
+        component: Home,
+        leaf: true,
+        iconCls: 'fa fa-address-card',
+        children: [
+            { path: '/messages', component: Message, name: '消息', iconCls: 'el-icon-message' }
         ]
     },
     {

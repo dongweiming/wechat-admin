@@ -1,11 +1,14 @@
 from wxpy.api.consts import *
 
+MP = 'MP'
+
 ID_TO_TYPE_MAP = {
     1: TEXT,
     2: SHARING,
     3: PICTURE,
     4: VIDEO,
     5: CARD,
+    6: MP,
     0: 'Default'
 }
 

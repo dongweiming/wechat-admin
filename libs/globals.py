@@ -12,4 +12,3 @@ def _find_bot():
 
 _wx_ctx_stack = LocalStack()
 current_bot = LocalProxy(_find_bot)
-

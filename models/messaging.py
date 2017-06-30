@@ -1,5 +1,10 @@
+from sqlalchemy.ext.hybrid import hybrid_property
+
 from ext import db
 from .mixin import BaseMixin
+from .core import User, Group
+from libs.consts import ID_TO_TYPE_MAP
+from libs.utils import cached_hybrid_property
 
 
 class Log(db.Model):
@@ -31,3 +36,34 @@ class Message(BaseMixin, db.Model):
 
     def __repr__(self):
         return '<Message %r>' % self.id
+
+    @cached_hybrid_property
+    def query(self):
+        return db.session.query
+
+    @hybrid_property
+    def group(self):
+        if not self.group_id:
+            return {}
+        group = self.query(Group).get(self.group_id)
+        return group.to_dict() if group else {}
+
+    @hybrid_property
+    def sender(self):
+        user = self.query(User).get(self.sender_id)
+        return user.to_dict() if user else {}
+
+    @hybrid_property
+    def receiver(self):
+        user = self.query(User).get(self.receiver_id)
+        return user.to_dict() if user else {}
+
+    @hybrid_property
+    def msg_type(self):
+        return ID_TO_TYPE_MAP.get(self.type, 'Text')
+
+    def to_dict(self):
+        dct = super().to_dict()
+        for p in ('receiver', 'sender', 'group', 'msg_type'):
+            dct[p] = getattr(self, p)
+        return dct

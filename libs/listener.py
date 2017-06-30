@@ -2,7 +2,7 @@
 import os
 import re
 
-from wxpy import Friend, Group
+from wxpy import Friend, Group, Chat, MP as _MP
 from wxpy.api import consts
 
 from libs.consts import *
@@ -79,10 +79,16 @@ def welcome(msg):
 
 @bot.register(msg_types=all_types, except_self=False)
 def send_msg(m):
+    if m.receiver.name is None:
+        return  # wxpy还不支持未命名的群聊消息
     msg_type = TYPE_TO_ID_MAP.get(m.type, 0)
-    if isinstance(m.receiver, Group):
+    if isinstance(m.sender, Group):
         sender_id = m.member.puid
         group_id = m.chat.puid
+    elif isinstance(m.sender, _MP):
+        sender_id = m.sender.puid
+        group_id = 0
+        msg_type = TYPE_TO_ID_MAP.get('MP')
     else:
         sender_id = m.sender.puid
         group_id = 0

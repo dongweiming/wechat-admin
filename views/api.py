@@ -12,9 +12,11 @@ from views.exceptions import ApiException
 import views.settings as settings
 from libs.globals import current_bot, _wx_ctx_stack
 from libs.wx import get_logged_in_user
+from libs.consts import TYPE_TO_ID_MAP
 from ext import db, sse
 
 from models.core import User, Group, friendship, group_relationship
+from models.messaging import Message
 
 PER_PAGE = 20
 
@@ -285,6 +287,28 @@ def send_message():
             errors.not_found,
             '如下puid用户未找到: {}'.format(','.join(unexpected)))
     return {}
+
+
+@json_api.route('/messages')
+def messages():
+    page = request.args.get('page', 1, type=int)
+    page_size = request.args.get('page_size', 20, type=int)
+    type = request.args.get('type', '')
+    query = db.session.query
+    if type:
+        if not isinstance(type, int):
+            type = TYPE_TO_ID_MAP.get(type, 0)
+        ms = query(Message).filter(Message.type==type)
+        total = ms.count()
+    else:
+        ms = query(Message)
+        total = ms.count()
+    ms = ms.order_by(Message.id.desc()).offset(
+        (page-1)*page_size).limit(page_size).all()
+    return {
+        'total': total,
+        'messages': [m.to_dict() for m in ms]
+    }
 
 
 json_api.add_url_rule('/user/<id>', view_func=UserAPI.as_view('user'))
