@@ -75,9 +75,10 @@ def error_handler(error):
 @json_api.route('/login', methods=['post'])
 def login():
     user = get_logged_in_user(current_bot)
+    from wechat.tasks import async_retrieve_data, listener
+    async_retrieve_data.delay()
+    listener.delay()
     sse.publish({'type': 'logged_in', 'user': user}, type='login')
-    from wechat.tasks import async_retrieve_data
-    async_retrieve_data()
     return {'msg': ''}
 
 
@@ -295,6 +296,7 @@ def messages():
     page_size = request.args.get('page_size', 20, type=int)
     type = request.args.get('type', '')
     query = db.session.query
+    uid = current_bot.self.puid
     if type:
         if not isinstance(type, int):
             type = TYPE_TO_ID_MAP.get(type, 0)
@@ -303,8 +305,10 @@ def messages():
     else:
         ms = query(Message)
         total = ms.count()
-    ms = ms.order_by(Message.id.desc()).offset(
-        (page-1)*page_size).limit(page_size).all()
+    #ms = ms.filter(Message.receiver_id==uid).order_by(
+    #    Message.id.desc()).offset((page-1)*page_size).limit(page_size).all()
+    ms = ms.order_by(
+        Message.id.desc()).offset((page-1)*page_size).limit(page_size).all()
     return {
         'total': total,
         'messages': [m.to_dict() for m in ms]

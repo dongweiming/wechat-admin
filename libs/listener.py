@@ -8,7 +8,7 @@ from wxpy.api import consts
 from libs.consts import *
 from libs.globals import current_bot as bot
 from models.admin import GroupSettings
-from models.messaging import Message
+from models.messaging import Message, db
 
 uid = bot.self.puid
 settings = GroupSettings.objects.get_by_id(uid)
@@ -79,8 +79,10 @@ def welcome(msg):
 
 @bot.register(msg_types=all_types, except_self=False)
 def send_msg(m):
-    if m.receiver.name is None:
-        return  # wxpy还不支持未命名的群聊消息
+    # wxpy还不支持未命名的群聊消息
+    # 先忽略腾讯新闻之类发的信息
+    if m.receiver.name is None or m.sender is None:
+        return
     msg_type = TYPE_TO_ID_MAP.get(m.type, 0)
     if isinstance(m.sender, Group):
         sender_id = m.member.puid
@@ -101,6 +103,8 @@ def send_msg(m):
             _, ext = os.path.splitext(m.file_name)
             m.get_file(os.path.join(here, '../static/img/uploads',
                                     '{}{}'.format(msg.id, ext)))
+            msg.file_ext = ext
+            db.session.commit()
     # sse
 
 

@@ -2,8 +2,8 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from ext import db
 from .mixin import BaseMixin
-from .core import User, Group
-from libs.consts import ID_TO_TYPE_MAP
+from .core import User, Group, MP
+from libs.consts import ID_TO_TYPE_MAP, MP as _MP
 from libs.utils import cached_hybrid_property
 
 
@@ -32,7 +32,8 @@ class Message(BaseMixin, db.Model):
     content = db.Column(db.String(255))
     receive_time = db.Column(db.DateTime)
     type = db.Column(db.SmallInteger)
-    url = db.Column(db.String(255), default='')
+    url = db.Column(db.String(512), default='')
+    file_ext = db.Column(db.String(20), default='')
 
     def __repr__(self):
         return '<Message %r>' % self.id
@@ -50,20 +51,17 @@ class Message(BaseMixin, db.Model):
 
     @hybrid_property
     def sender(self):
-        user = self.query(User).get(self.sender_id)
+        if not self.sender_id:
+            return {}
+        user = self.query(MP if self.type == _MP else User).get(self.sender_id)
         return user.to_dict() if user else {}
 
-    @hybrid_property
-    def receiver(self):
-        user = self.query(User).get(self.receiver_id)
-        return user.to_dict() if user else {}
-
-    @hybrid_property
+    @cached_hybrid_property
     def msg_type(self):
         return ID_TO_TYPE_MAP.get(self.type, 'Text')
 
     def to_dict(self):
         dct = super().to_dict()
-        for p in ('receiver', 'sender', 'group', 'msg_type'):
+        for p in ('sender', 'group', 'msg_type'):
             dct[p] = getattr(self, p)
         return dct

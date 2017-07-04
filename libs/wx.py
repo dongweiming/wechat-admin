@@ -11,7 +11,8 @@ from ext import db, sse
 from config import avatar_tmpl
 
 here = os.path.abspath(os.path.dirname(__file__))
-USER_FIELD = ['sex', 'nick_name', 'signature', 'province', 'city']
+MP_FIELD = ['sex', 'nick_name', 'signature', 'province', 'city']
+USER_FIELD = MP_FIELD + ['sex']
 
 
 def publish(uuid, **kw):
@@ -49,7 +50,7 @@ def get_logged_in_user(bot):
     return user
 
 
-from models.core import User, Group  # noqa
+from models.core import User, Group, MP  # noqa
 
 
 def gen_avatar_path(puid, force=False):
@@ -107,6 +108,23 @@ def retrieve_data(update=False):
         _, path, need_update = gen_avatar_path(g.puid)
         if need_update:
             g.get_avatar(path)
+    # update mp
+    myself = session.query(User).get(bot.self.puid)
+    wx_mps = bot.mps()
+    local_ids = set([m.id for m in myself.mps])
+    wx_ids = set([u.puid for u in wx_mps])
+    need_add = wx_ids.difference(local_ids)
+    if need_add:
+        for m in wx_mps:
+            if m.puid in need_add:
+                User.create(id=m.puid, **{field: getattr(m, field)
+                                          for field in MP_FIELD})
+                # wxpy还不支持公众号的头像下载
+    need_del = local_ids.difference(wx_ids)
+    if need_del:
+        for mp in myself.mps:
+            if mp.id in need_del:
+                db.session.delete(mp)
     # update contact
     myself = session.query(User).get(bot.self.puid)
     wx_friends = bot.friends()

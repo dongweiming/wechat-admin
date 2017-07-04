@@ -3,7 +3,6 @@ from collections import OrderedDict
 from flask import Flask
 from werkzeug.wsgi import DispatcherMiddleware, SharedDataMiddleware
 
-
 import config
 from ext import sse
 from views import home, json_api

@@ -20,6 +20,14 @@ group_relationship = db.Table(
               nullable=False)
 )
 
+mp_relationship = db.Table(
+     'mp_relationship',
+     db.Column('mp_id', db.String(20), db.ForeignKey('mps.id'),
+               nullable=False),
+     db.Column('user_id',db.String(20), db.ForeignKey('users.id'),
+               nullable=False)
+ )
+
 
 class CoreMixin(BaseMixin):
     @property
@@ -37,11 +45,13 @@ class User(CoreMixin, db.Model):
     id = db.Column(db.String(20), primary_key=True)  # puid
     sex = db.Column(db.SmallInteger, default=2)
     nick_name = db.Column(db.String(60), index=True)
-    signature = db.Column(db.String(120), default='')
+    signature = db.Column(db.String(255), default='')
     province = db.Column(db.String(20), default='')
     city = db.Column(db.String(20), default='')
     groups =db.relationship('Group', secondary=group_relationship,
                             backref='members')
+    mps =db.relationship('MP', secondary=mp_relationship,
+                             backref='users')
     friends = db.relationship('User',
         secondary = friendship,
         primaryjoin = (friendship.c.user_id == id),
@@ -116,3 +126,15 @@ class Group(CoreMixin, db.Model):
          rs = super().to_dict()
          rs['count'] = self.count
          return rs
+
+
+class MP(CoreMixin, db.Model):
+    __tablename__ = 'mps'
+    id = db.Column(db.String(20), primary_key=True)  # puid
+    city = db.Column(db.String(20), default='')
+    province = db.Column(db.String(20), default='')
+    nick_name = db.Column(db.String(60), index=True)
+    signature = db.Column(db.String(255), default='')
+
+    def __repr__(self):
+        return '<MP %r>' % self.nick_name
