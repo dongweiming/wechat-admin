@@ -5,6 +5,8 @@ from redis import Redis
 from config import REDIS_URL
 
 redisco.connection = Redis.from_url(REDIS_URL)
+r = Redis.from_url(REDIS_URL)
+LISTENER_TASK_KEY = 'listener:task_id'
 
 
 class RBase(models.Model):

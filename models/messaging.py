@@ -1,15 +1,13 @@
-from redis import Redis
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from ext import db
+from .base import r
 from .mixin import BaseMixin
 from .core import User, Group, MP
-from config import REDIS_URL
 from libs.consts import ID_TO_TYPE_MAP, MP as _MP
 from libs.utils import cached_hybrid_property
 
 NOTIFICATION_KEY = 'notification:{receiver_id}'
-r = Redis.from_url(REDIS_URL)
 
 
 class Notification:
