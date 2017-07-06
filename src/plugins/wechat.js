@@ -27,13 +27,13 @@ function eventSourceListener() {
         } else if (data.type == 'confirm_login') {
             self.sub_title = 'Scan successful';
             self.sub_desc = 'Confirm login on mobile WeChat';
-            self.qrCode = 'http://localhost:8100/static/img/qr_code.gif';
+            self.qrCode = data.extra;
         } else if (data.type == 'logged_in') {
             sessionStorage.setItem('user', JSON.stringify(data.user));
             self.$router.push({ path: '/main' });
-        } else if (data.type == 'logout') {
+        } else if (data.type == 'logged_out') {
             sessionStorage.removeItem('user');
-            _this.$router.push('/login');
+            self.$router.push('/login');
         }
     }, false);
 

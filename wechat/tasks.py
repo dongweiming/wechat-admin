@@ -13,7 +13,7 @@ from ext import db, sse
 from models.messaging import Message, Notification
 
 
-def restart_listener():
+def restart_listener(sender):
     task_id = r.get(LISTENER_TASK_KEY)
     if task_id:
         revoke(task_id)

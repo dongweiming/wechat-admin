@@ -4,7 +4,7 @@
 import os
 from datetime import datetime, timedelta
 
-from itchat.signals import scan_qr_code, confirm_login, logged_in, logout
+from itchat.signals import scan_qr_code, confirm_login, logged_in, logged_out
 from wxpy.exceptions import ResponseError
 
 from ext import db, sse
@@ -18,14 +18,15 @@ USER_FIELD = MP_FIELD + ['sex']
 def publish(uuid, **kw):
      from app import app
      with app.app_context():
-         params = {'uuid': uuid, 'type': kw.pop('type', None)}
+         params = {'uuid': uuid, 'extra': kw.pop('extra', None),
+                   'type': kw.pop('type', None)}
          params.update(kw)
          sse.publish(params, type='login')
 
 
 scan_qr_code.connect(publish)
 confirm_login.connect(publish)
-logout.connect(publish)
+logged_out.connect(publish)
 
 from wxpy import * # noqa
 
