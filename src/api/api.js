@@ -79,6 +79,10 @@ const getMsgList = params => {
     return request(`${NewBase}/messages`, params);
 }
 
+const readAll = () => {
+    return request(`${NewBase}/readall`, {}, 'post');
+}
+
 module.exports = {
     requestLogin,
     requestLogout,
@@ -96,5 +100,6 @@ module.exports = {
     sendMessage,
     getAllGroups,
     addGroup,
-    getMsgList
+    getMsgList,
+    readAll
 };

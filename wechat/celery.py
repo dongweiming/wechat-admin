@@ -1,5 +1,6 @@
 from celery import Celery
 from celery.signals import worker_ready
+from celery.schedules import crontab
 
 app = Celery('wechat', include=['wechat.tasks'])
 app.config_from_object('wechat.celeryconfig')

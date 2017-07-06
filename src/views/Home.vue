@@ -16,7 +16,7 @@
             <el-badge :is-dot="notificationCount != 0"></el-badge>
           </span>
 					<el-dropdown-menu slot="dropdown">
-						<el-dropdown-item class="clearfix">我的消息<el-badge class="mark" :value="notificationCount" v-if="notificationCount"/></el-dropdown-item>
+						<el-dropdown-item class="clearfix" @click.native="readMark">我的消息<el-badge class="mark" :value="notificationCount" v-if="notificationCount"/></el-dropdown-item>
 						<el-dropdown-item @click.native="settings">设置</el-dropdown-item>
 						<el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
 					</el-dropdown-menu>
@@ -75,7 +75,7 @@
 </template>
 
 <script>
-  import { requestLogout } from '../api/api';
+  import { requestLogout, readAll } from '../api/api';
 	export default {
 		data() {
 			return {
@@ -107,6 +107,12 @@
 			},
 			handleselect: function (a, b) {
 			},
+      readMark () {
+        readAll().then(res => {
+          this.notificationCount = 0;
+          this.$router.push('/messages'); 
+        });
+      }, 
       settings () {
         this.$router.push('/settings/group');
       },
@@ -134,6 +140,7 @@
 			}
 		},
 		mounted() {
+      this.$eventSourceListener();
 			var user = sessionStorage.getItem('user');
 			if (user) {
 				user = JSON.parse(user);

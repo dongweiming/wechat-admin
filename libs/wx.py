@@ -23,11 +23,6 @@ def publish(uuid, **kw):
          sse.publish(params, type='login')
 
 
-def send_notify():
-     from app import app
-     with app.app_context():
-          sse.publish(params, type='login')
-
 scan_qr_code.connect(publish)
 confirm_login.connect(publish)
 logout.connect(publish)
@@ -46,11 +41,11 @@ def get_bot():
 def get_logged_in_user(bot):
     user_ = bot.self
     id = user_.puid
-    avatar = gen_avatar_path(id)
+    avatar_url, _, _ = gen_avatar_path(id)
 
     user = {
         'id': id,
-        'avatar': avatar,
+        'avatar': avatar_url,
         'name': user_.nick_name
     }
     return user

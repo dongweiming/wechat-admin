@@ -16,7 +16,7 @@ from libs.consts import TYPE_TO_ID_MAP
 from ext import db, sse
 
 from models.core import User, Group, friendship, group_relationship
-from models.messaging import Message
+from models.messaging import Message, Notification
 
 PER_PAGE = 20
 
@@ -305,15 +305,19 @@ def messages():
     else:
         ms = query(Message)
         total = ms.count()
-    #ms = ms.filter(Message.receiver_id==uid).order_by(
-    #    Message.id.desc()).offset((page-1)*page_size).limit(page_size).all()
-    ms = ms.order_by(
+    ms = ms.filter(Message.receiver_id==uid).order_by(
         Message.id.desc()).offset((page-1)*page_size).limit(page_size).all()
     return {
         'total': total,
         'messages': [m.to_dict() for m in ms]
     }
 
+
+@json_api.route('/readall', methods=['post'])
+def readall():
+    uid = current_bot.self.puid
+    Notification.clean_by_receiver_id(uid)
+    return {}
 
 json_api.add_url_rule('/user/<id>', view_func=UserAPI.as_view('user'))
 json_api.add_url_rule('/users', view_func=UsersAPI.as_view('users'))

@@ -8,7 +8,7 @@ from wxpy.api import consts
 from libs.consts import *
 from libs.globals import current_bot as bot
 from models.admin import GroupSettings
-from models.messaging import Message, db
+from models.messaging import Message, Notification, db
 
 uid = bot.self.puid
 settings = GroupSettings.objects.get_by_id(uid)
@@ -94,9 +94,10 @@ def send_msg(m):
     else:
         sender_id = m.sender.puid
         group_id = 0
+    receiver_id = m.receiver.puid
     from views.api import json_api as app
     with app.app_context():
-        msg = Message.create(sender_id=sender_id, receiver_id=m.receiver.puid,
+        msg = Message.create(sender_id=sender_id, receiver_id=receiver_id,
                              content=m.text, url=m.url, type=msg_type,
                              receive_time=m.receive_time, group_id=group_id)
         if m.type in (PICTURE, RECORDING, ATTACHMENT, VIDEO):
@@ -105,6 +106,7 @@ def send_msg(m):
                                     '{}{}'.format(msg.id, ext)))
             msg.file_ext = ext
             db.session.commit()
+        Notification.add(receiver_id, msg.id)
     # sse
 
 

@@ -1,4 +1,5 @@
 import redisco
+from redisco import models
 from redis import Redis
 
 from config import REDIS_URL
@@ -6,7 +7,7 @@ from config import REDIS_URL
 redisco.connection = Redis.from_url(REDIS_URL)
 
 
-class RBase(redisco.models.Model):
+class RBase(models.Model):
 
     @classmethod
     def create_or_update(cls, **kw):
