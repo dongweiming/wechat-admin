@@ -4,7 +4,7 @@
 import os
 from datetime import datetime, timedelta
 
-from itchat.signals import scan_qr_code, confirm_login, logged_in
+from itchat.signals import scan_qr_code, confirm_login, logged_in, logout
 from wxpy.exceptions import ResponseError
 
 from ext import db, sse
@@ -23,8 +23,14 @@ def publish(uuid, **kw):
          sse.publish(params, type='login')
 
 
+def send_notify():
+     from app import app
+     with app.app_context():
+          sse.publish(params, type='login')
+
 scan_qr_code.connect(publish)
 confirm_login.connect(publish)
+logout.connect(publish)
 
 from wxpy import * # noqa
 

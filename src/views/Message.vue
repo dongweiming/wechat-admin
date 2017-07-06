@@ -14,7 +14,7 @@
 			<el-table-column prop="sender" label="发送者" width="160">
         <template scope="scope">
           <div v-if="!isEmptyObject(scope.row.sender)">
-            <img :src="scope.row.sender.avatar" class="avatar"/>
+            <img :src="scope.row.sender.avatar" class="avatar" v-if="scope.row.sender.avatar"/>
             <a href="#" class="nick-name">{{scope.row.sender.nick_name}}</a>
           </div> 
         </template>

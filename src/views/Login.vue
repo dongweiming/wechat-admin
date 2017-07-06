@@ -12,7 +12,7 @@
         </div>
     </div>
     <div class="github">
-      <a class="lang-item" href="github.com/dongweiming/">Github</a>
+      <a class="lang-item" href="https://github.com/dongweiming/wechat-admin">Github</a>
     </div>
     <div class="copyright">
         <p class="desc">&copy; Wechat-Vue-Admin Team. All Rights </p>
@@ -23,14 +23,6 @@
 <script>
   import { requestLogin } from '../api/api';
   export default {
-    data() {
-      return {
-        uuid: '',
-        qrCode: 'http://localhost:8100/static/img/qr_code.gif',
-        sub_title: 'Scan to log in to WeChat',
-        sub_desc: 'Log in on phone to use WeChat on Web'
-      };
-    },
     methods: {
       validate(res) {
           let { msg, r } = res.data;
@@ -43,30 +35,8 @@
           }
           return true;
       },
-      eventSourceListen() {
-          let source = new EventSource("http://localhost:8100/stream");
-          let self = this;
-          source.addEventListener('login', function(event) {
-              let data = JSON.parse(event.data);
-              if (data.type == 'scan_qr_code') {
-                  self.uuid = data.uuid;
-                  self.qrCode = 'http://localhost:8100/static/img/qr_code.png';
-              } else if (data.type == 'confirm_login') {
-                  self.sub_title = 'Scan successful';
-                  self.sub_desc = 'Confirm login on mobile WeChat';
-                  self.qrCode = 'http://localhost:8100/static/img/qr_code.gif';
-              } else if (data.type == 'logged_in') {
-                  sessionStorage.setItem('user', JSON.stringify(data.user));
-                  self.$router.push({ path: '/main' });
-              }
-          }, false);
-          source.addEventListener('error', function(event) {
-              console.log("Failed to connect to event stream");
-          }, false);
-
-      },
       login() {
-          this.eventSourceListen();
+          this.$eventSourceListener();
           requestLogin().then(res => {
               this.validate(res);
           });

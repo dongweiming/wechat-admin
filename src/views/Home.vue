@@ -11,9 +11,12 @@
 			</el-col>
 			<el-col :span="4" class="userinfo">
 				<el-dropdown trigger="hover">
-					<span class="el-dropdown-link userinfo-inner"><img :src="this.sysUserAvatar" /> {{sysUserName}}</span>
+					<span class="el-dropdown-link userinfo-inner">
+            <img :src="this.sysUserAvatar"/>{{sysUserName}}
+            <el-badge :is-dot="notificationCount != 0"></el-badge>
+          </span>
 					<el-dropdown-menu slot="dropdown">
-						<el-dropdown-item>我的消息</el-dropdown-item>
+						<el-dropdown-item class="clearfix">我的消息<el-badge class="mark" :value="notificationCount" v-if="notificationCount"/></el-dropdown-item>
 						<el-dropdown-item @click.native="settings">设置</el-dropdown-item>
 						<el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
 					</el-dropdown-menu>
@@ -89,7 +92,7 @@
 					type: [],
 					resource: '',
 					desc: ''
-				}
+				},
 			}
 		},
 		methods: {
