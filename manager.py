@@ -1,7 +1,7 @@
 import click
 from flask_migrate import Migrate
 
-from app import app
+from views.api import json_api as app
 from ext import db
 
 migrate = Migrate(app, db)

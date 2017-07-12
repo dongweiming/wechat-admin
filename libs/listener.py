@@ -107,8 +107,3 @@ def send_msg(m):
             msg.file_ext = ext
             db.session.commit()
         Notification.add(receiver_id, msg.id)
-    # sse
-
-
-print('Started!')
-# embed()

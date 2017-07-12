@@ -39,19 +39,6 @@ def get_bot():
     return bot
 
 
-def get_logged_in_user(bot):
-    user_ = bot.self
-    id = user_.puid
-    avatar_url, _, _ = gen_avatar_path(id)
-
-    user = {
-        'id': id,
-        'avatar': avatar_url,
-        'name': user_.nick_name
-    }
-    return user
-
-
 from models.core import User, Group, MP  # noqa
 
 
@@ -70,7 +57,7 @@ def get_logged_in_user(bot):
     user_ = bot.self
     id = user_.puid
     url, path, need_update = gen_avatar_path(id, force=True)
-    bot.core.get_head_img(path)
+    bot.core.get_head_img(picDir=path)
     user = {
         'id': id,
         'avatar': url,

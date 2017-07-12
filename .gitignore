@@ -36,7 +36,6 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
-build/
 develop-eggs/
 dist/
 downloads/
@@ -116,4 +115,5 @@ ENV/
 .ropeproject
 .*
 *pkl
-static/img/avatars/*
+static/img/*
+uploads/*

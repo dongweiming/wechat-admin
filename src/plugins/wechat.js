@@ -17,13 +17,13 @@ function checkStatus(res, options = {}) {
 }
 
 function eventSourceListener() {
-    let source = new EventSource("http://localhost:8100/stream");
+    let source = new EventSource(`${API_URL}/stream`);
     let self = this;
     source.addEventListener('login', function(event) {
         let data = JSON.parse(event.data);
         if (data.type == 'scan_qr_code') {
             self.uuid = data.uuid;
-            self.qrCode = 'http://localhost:8100/static/img/qr_code.png';
+            self.qrCode = `${API_URL}/static/img/qr_code.png`;
         } else if (data.type == 'confirm_login') {
             self.sub_title = 'Scan successful';
             self.sub_desc = 'Confirm login on mobile WeChat';
@@ -53,7 +53,7 @@ export default {
             data: function() {
                 return {
                     uuid: '',
-                    qrCode: 'http://localhost:8100/static/img/qr_code.gif',
+                    qrCode: `${API_URL}/static/img/qr_code.gif`,
                     sub_title: 'Scan to log in to WeChat',
                     sub_desc: 'Log in on phone to use WeChat on Web',
                     notificationCount: 0

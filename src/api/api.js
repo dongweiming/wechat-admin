@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-let base = '';
-let NewBase = 'http://localhost:8100/j';
+let base = `${API_URL}/j`;
 
 const request = (url, options={}, method='get') => {
     let key = ~['delete', 'get', 'head'].indexOf(method) ? 'params' : 'data';
@@ -12,75 +11,75 @@ const request = (url, options={}, method='get') => {
 }
 
 const requestLogin = () => {
-    return request(`${NewBase}/login`, {}, 'post');
+    return request(`${base}/login`, {}, 'post');
 };
 
 const requestLogout = () => {
-    return request(`${NewBase}/logout`, {}, 'post');
+    return request(`${base}/logout`, {}, 'post');
 };
 
 const getUserList = params => {
-    return request(`${NewBase}/users`, params);
+    return request(`${base}/users`, params);
 }
 
 const getGroupSetings = _ => {
-    return request(`${NewBase}/settings/group`);
+    return request(`${base}/settings/group`);
 }
 
 const updateGroupSetings = params => {
-    return request(`${NewBase}/settings/group`, params, 'put');
+    return request(`${base}/settings/group`, params, 'put');
 }
 
 const getGroupList = params => {
-    return request(`${NewBase}/groups`, params);
+    return request(`${base}/groups`, params);
 }
 
 const removeUser = (id, params) => {
-    return request(`${NewBase}/user/${id}`, params, 'delete');
+    return request(`${base}/user/${id}`, params, 'delete');
 }
 
 const removeGroup = id => {
-    return request(`${NewBase}/group/${id}`, {}, 'delete');
+    return request(`${base}/group/${id}`, {}, 'delete');
 }
 
 const batchRemoveUser  = params => {
-    return request(`${NewBase}/users`, params, 'delete');
+    return request(`${base}/users`, params, 'delete');
 }
 
 const batchRemoveGroup  = params => {
-    return request(`${NewBase}/groups`, params, 'delete');
+    return request(`${base}/groups`, params, 'delete');
 }
 
 const addUser = params => {
-    return request(`${NewBase}/user/${params.wxid}`, params, 'put');
+    return request(`${base}/user/${params.wxid}`, params, 'put');
 }
 
 const addUsers = params => {
-    return request(`${NewBase}/users`, params, 'put');
+    return request(`${base}/users`, params, 'put');
 }
 
 const addGroup = params => {
-    return request(`${NewBase}/groups`, params, 'put');
+    return request(`${base}/groups`, params, 'put');
 }
 
 const getAllUsers = () => {
-    return request(`${NewBase}/all_users`);
+    return request(`${base}/all_users`);
 }
 
 const sendMessage = params => {
-    return request(`${NewBase}/send_message`, params, 'post');
+    return request(`${base}/send_message`, params, 'post');
 }
 
 const getAllGroups = () => {
-    return request(`${NewBase}/all_groups`);
+    return request(`${base}/all_groups`);
 }
 
 const getMsgList = params => {
-    return request(`${NewBase}/messages`, params);
+    return request(`${base}/messages`, params);
 }
 
 const readAll = () => {
-    return request(`${NewBase}/readall`, {}, 'post');
+    return request(`${base}/readall`, {}, 'post');
 }
 
 module.exports = {
@@ -101,5 +100,6 @@ module.exports = {
     getAllGroups,
     addGroup,
     getMsgList,
-    readAll
+    readAll,
+    API_URL
 };

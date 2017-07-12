@@ -2,6 +2,7 @@
 import os
 from flask import Flask, request
 from flask.views import MethodView
+from flask_sqlalchemy import get_debug_queries
 from sqlalchemy import and_
 from itchat.signals import scan_qr_code, confirm_login, logged_in
 
@@ -51,6 +52,11 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Origin', '*')
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    for query in get_debug_queries():
+        if query.duration >= config.DATABASE_QUERY_TIMEOUT:
+            json_api.logger.warning(
+                'SLOW QUERY: %s\nParameters: %s\nDuration: %fs\nContext: %s\n'.format(
+                    query.statement, query.parameters, query.duration, query.context))
     return response
 
 

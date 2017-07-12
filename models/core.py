@@ -36,7 +36,7 @@ class CoreMixin(BaseMixin):
 
     def to_dict(self):
         rs = super().to_dict()
-        rs['avatar'] = 'http://localhost:8100{}'.format(self.avatar)
+        rs['avatar'] = self.avatar
         return rs
 
 

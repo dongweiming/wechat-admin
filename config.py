@@ -9,6 +9,11 @@ SESSION_TYPE = 'redis'
 avatar_tmpl = '/static/img/avatars/{}.jpg'
 UPLOAD_FOLDER = os.path.join(HERE, 'uploads')
 PIC_TYPES = set(['png', 'jpg', 'jpeg', 'gif'])
+SQLALCHEMY_RECORD_QUERIES = True
+DATABASE_QUERY_TIMEOUT = 0.5
+
+if not os.path.exists(UPLOAD_FOLDER):
+    os.mkdir(UPLOAD_FOLDER)
 
 try:
     from local_settings import *  # noqa
