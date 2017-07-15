@@ -1,7 +1,7 @@
 from sqlalchemy.ext.hybrid import hybrid_property
 
 from ext import db
-from .base import r
+from .redis import db as r
 from .mixin import BaseMixin
 from .core import User, Group, MP
 from libs.consts import ID_TO_TYPE_MAP, MP as _MP

@@ -7,7 +7,7 @@ from wechat.celery import app
 from libs.wx import retrieve_data as _retrieve_data
 from wxpy.signals import stopped
 from views.api import json_api
-from models.base import r, LISTENER_TASK_KEY
+from models.redis import db as r, LISTENER_TASK_KEY
 from app import app as sse_api
 from ext import db, sse
 from models.messaging import Message, Notification

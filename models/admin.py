@@ -1,13 +1,12 @@
 # coding=utf-8
-from redisco import models
-
-from .base import RBase
+from walrus import TextField, ListField
+from .redis import RBase
+from config import group_tmpl, welcome_text, invite_text
 
 
 class GroupSettings(RBase):
-    id = models.Attribute(required=True)
-    welcome_text = models.Attribute(default='')
-    invite_text = models.Attribute(default='')
-    group_tmpl = models.Attribute(default='')
-    creators = models.ListField(str, default=[])
-    creator_names = models.ListField(str, default=[])
+    id = TextField(primary_key=True)
+    welcome_text = TextField(default=welcome_text)
+    invite_text = TextField(default=invite_text)
+    group_tmpl = TextField(default=group_tmpl)
+    creators = ListField()

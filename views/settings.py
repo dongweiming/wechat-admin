@@ -27,13 +27,18 @@ class GroupAPI(MethodView):
             'users': [user.to_dict() for user in users]
         }
         settings = GroupSettings.get(uid)
-        data.update(settings)
+        data.update(settings.to_dict())
         return data
 
     def put(self):
         data = request.get_json()
         data['id'] = current_bot.self.puid
-        GroupSettings.create_or_update(**data)
+        creators = data.pop('creators', [])
+        obj = GroupSettings.create(**data)
+        if creators:
+            obj.creators.clear()
+            obj.creators.extend(creators)
+            obj.save()
         return {}
 
 

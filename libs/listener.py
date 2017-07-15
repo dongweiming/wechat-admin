@@ -11,7 +11,7 @@ from models.admin import GroupSettings
 from models.messaging import Message, Notification, db
 
 uid = bot.self.puid
-settings = GroupSettings.objects.get_by_id(uid)
+settings = GroupSettings.get(uid)
 new_member_regex = re.compile(r'^"(.+)"通过|邀请"(.+)"加入')
 all_types = [k.capitalize() for k in dir(consts) if k.isupper() and k != 'SYSTEM']
 here = os.path.abspath(os.path.dirname(__file__))
@@ -60,7 +60,7 @@ def new_friends(msg):
     if 'python' in msg.text.lower():
         invite(user)
     else:
-        return settings.invite_text
+        user.send(settings.invite_text)
 
 
 @bot.register(Friend, msg_types=TEXT)
@@ -73,7 +73,7 @@ def exist_friends(msg):
 
 @bot.register(groups, NOTE)
 def welcome(msg):
-    match = regex.search(msg.text)
+    match = new_member_regex.search(msg.text)
     if match:
         return settings.welcome_text.format(match.groups()[1])
 

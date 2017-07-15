@@ -36,21 +36,6 @@
         saveLoading: false,
         filterMethod(query, item) {
           return item.label.indexOf(query) > -1;
-        },
-        default: {
-            welcome_text: '🎉 欢迎 @{} 的加入！',
-            invite_text: `欢迎您！
-请输入关键字 Python 加入群：                                            
-
-进群四件事：
-
-1、阅读群公告，
-2、修改群名片，
-3、做自我介绍，
-4、要是发红包，总额请不要低于50
-                                                                                       
-请言行遵守群内规定，违规者将受到处罚，拉入黑名单。`,
-            'group_tmpl': 'Python✌{}群'
         }
       };
 		},
@@ -67,9 +52,9 @@
            });
            this.allMembers = users;
            this.users = res.data.creators;
-           this.welcome_text = res.data.welcome_text || this.default.welcome_text;
-           this.invite_text = res.data.invite_text || this.default.invite_text;
-           this.group_tmpl = res.data.group_tmpl || this.default.group_tmpl;
+           this.welcome_text = res.data.welcome_text;
+           this.invite_text = res.data.invite_text;
+           this.group_tmpl = res.data.group_tmpl;
          });
       },
       saveSettings () {

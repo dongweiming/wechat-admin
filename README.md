@@ -41,7 +41,7 @@
 * Flask
 * Celery
 * SSE
-* [Redisco](https://github.com/dongweiming/redisco)
+* [Walrus](https://github.com/coleifer/walrus)
 * Gunicorn
 * Flask-Migrate
 * Flask-SQLAlchemy
