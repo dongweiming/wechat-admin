@@ -15,6 +15,7 @@ settings = GroupSettings.objects.get_by_id(uid)
 new_member_regex = re.compile(r'^"(.+)"通过|邀请"(.+)"加入')
 all_types = [k.capitalize() for k in dir(consts) if k.isupper() and k != 'SYSTEM']
 here = os.path.abspath(os.path.dirname(__file__))
+UPLOAD_PATH = os.path.join(here, '../static/img/uploads')
 
 groups = [g for g in bot.groups() if g.owner.puid == uid]
 
@@ -102,8 +103,7 @@ def send_msg(m):
                              receive_time=m.receive_time, group_id=group_id)
         if m.type in (PICTURE, RECORDING, ATTACHMENT, VIDEO):
             _, ext = os.path.splitext(m.file_name)
-            m.get_file(os.path.join(here, '../static/img/uploads',
-                                    '{}{}'.format(msg.id, ext)))
+            m.get_file(os.path.join(UPLOAD_PATH, '{}{}'.format(msg.id, ext)))
             msg.file_ext = ext
             db.session.commit()
         Notification.add(receiver_id, msg.id)

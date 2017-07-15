@@ -57,7 +57,11 @@ def get_logged_in_user(bot):
     user_ = bot.self
     id = user_.puid
     url, path, need_update = gen_avatar_path(id, force=True)
-    bot.core.get_head_img(picDir=path)
+    try:
+        bot.core.get_head_img(picDir=path)
+    except FileNotFoundError:
+        os.mkdir(os.path.dirname(path))
+        bot.core.get_head_img(picDir=path)
     user = {
         'id': id,
         'avatar': url,
