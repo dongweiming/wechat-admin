@@ -155,7 +155,7 @@
 					let para = { type: this.queryType };
 					removeUser(row.id, para).then((res) => {
 						this.listLoading = false;
-						this.checkStatus(res);
+						this.$checkStatus(res);
 						this.getUsers();
 					});
 				}).catch(() => {
@@ -195,7 +195,7 @@
               let func = this.addForm.wxid.length == 1 ? addUser : addUsers;
 							func(para).then((res) => {
 								this.addLoading = false;
-                this.checkStatus(res);
+                this.$checkStatus(res);
 								this.$refs['addForm'].resetFields();
 								this.addFormVisible = false;
 								this.getUsers();
@@ -220,7 +220,7 @@
            let para = { ids: ids, name: value };
            addGroup(para).then((res) => {
              this.listLoading = false;
-             this.checkStatus(res);
+             this.$checkStatus(res);
              this.getUsers();
            });
          });
@@ -234,7 +234,7 @@
 					let para = { ids: ids, type: this.queryType };
 					batchRemoveUser(para).then((res) => {
 						this.listLoading = false;
-						this.checkStatus(res);
+						this.$checkStatus(res);
 						this.getUsers();
 					});
 				});
