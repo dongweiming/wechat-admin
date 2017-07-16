@@ -12,7 +12,7 @@ from models.messaging import Message, Notification, db
 
 uid = bot.self.puid
 settings = GroupSettings.get(uid)
-new_member_regex = re.compile(r'^"(.+)"通过|邀请"(.+)"加入')
+new_member_regex = re.compile(r'^"(.+)"通过|邀请"(.+)"加入|')
 all_types = [k.capitalize() for k in dir(consts) if k.isupper() and k != 'SYSTEM']
 here = os.path.abspath(os.path.dirname(__file__))
 UPLOAD_PATH = os.path.join(here, '../static/img/uploads')
@@ -74,7 +74,9 @@ def exist_friends(msg):
 def welcome(msg):
     match = new_member_regex.search(msg.text)
     if match:
-        return settings.welcome_text.format(match.groups()[1])
+        text = list(filter(lambda x:x, match.groups()))
+        if text:
+            return settings.welcome_text.format(text[0])
 
 
 @bot.register(msg_types=all_types, except_self=False)
