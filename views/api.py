@@ -81,9 +81,8 @@ def error_handler(error):
 @json_api.route('/login', methods=['post'])
 def login():
     user = get_logged_in_user(current_bot)
-    from wechat.tasks import async_retrieve_data, listener
+    from wechat.tasks import async_retrieve_data
     async_retrieve_data.delay()
-    listener.delay()
     sse.publish({'type': 'logged_in', 'user': user}, type='login')
     return {'msg': ''}
 

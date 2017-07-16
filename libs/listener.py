@@ -49,7 +49,6 @@ def invite(user):
         else:
             next_topic = group_tmpl.format(re.search(r'\d+', s).group() + 1)
             new_group = bot.create_group(get_creators(), topic=next_topic)
-            new_group.remove_members([admins[0]])
     else:
         print('Invite Failed')
 
