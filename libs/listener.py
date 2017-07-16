@@ -16,6 +16,8 @@ new_member_regex = re.compile(r'^"(.+)"通过|邀请"(.+)"加入|')
 all_types = [k.capitalize() for k in dir(consts) if k.isupper() and k != 'SYSTEM']
 here = os.path.abspath(os.path.dirname(__file__))
 UPLOAD_PATH = os.path.join(here, '../static/img/uploads')
+if not os.path.exists(UPLOAD_PATH):
+    os.mkdir(UPLOAD_PATH)
 
 groups = [g for g in bot.groups() if g.owner.puid == uid]
 

@@ -10,14 +10,14 @@
 ![pypi](https://img.shields.io/pypi/v/nine.svg)
 ![ver](https://img.shields.io/badge/release-v0.1-red.svg)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/dongweiming/wechat-admin/issues)
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-ff69b4.svg)](https://github.com/dongweiming/wechat-admin/issues)
 
 ## 特性
 
 * 支持显示好友列表，可过滤
 * 支持显示群聊列表，可过滤
 * 可以同时给多个用户/群聊成员发送消息，支持发送文件，emoji表情。可预览
-* 如果为群聊创建者，可以删除（多）个成员
+* 如果为群聊创建者，可以删除（多个）成员
 * 可以选择好友/群聊成员创建新群
 * 对自动建群，邀请文本等可配置
 * 永久保存消息，可以通过消息列表页面查看和过滤。接收消息进程停止自动重启
@@ -69,6 +69,8 @@ mysql> ^DBye
 ```bash
 ❯ git clone https://github.com/dongweiming/wechat-admin
 ❯ cd wechat-admin
+❯ virtualenv venv  # 只支持Python 3
+❯ source venv/bin/activate  # 推荐使用autoenv
 ❯ venv/bin/pip install -r requirements.txt
 ```
 
@@ -146,3 +148,10 @@ WARN: 每次build会删除static目录，所以收到的内容被会删除，请
 * [vue-admin](https://github.com/taylorchen709/vue-admin)
 * [wxpy](https://github.com/youfou/wxpy)
 * [ItChat](https://github.com/littlecodersh/ItChat)
+
+## TODO
+
+1. 提供刷新按钮，可强制更新联系人和群聊列表
+2. 自定义help内容和关键词
+3. 尝试修改 wxpy puid算法，保证唯一性
+4. 灵活的插件系统，方便自定义
