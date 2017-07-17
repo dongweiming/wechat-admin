@@ -7,8 +7,5 @@ PyMySQL==0.7.11
 gunicorn==19.7.1
 msgpack-python==0.4.8
 walrus==0.4.1
-requests==2.18.1
-pyqrcode==1.2.1
-blinker==1.4
 -e git+https://github.com/dongweiming/ItChat@signals#egg=itchat
 -e git+https://github.com/dongweiming/wxpy@signals#egg=wxpy
