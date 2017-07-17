@@ -80,6 +80,10 @@ const readAll = () => {
     return request(`${base}/readall`, {}, 'post');
 }
 
+const flushData = params => {
+    return request(`${base}/flush`, params, 'post');
+}
+
 module.exports = {
     requestLogin,
     requestLogout,
@@ -99,5 +103,6 @@ module.exports = {
     addGroup,
     getMsgList,
     readAll,
-    API_URL
+    API_URL,
+    flushData
 };

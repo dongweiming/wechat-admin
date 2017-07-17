@@ -81,8 +81,8 @@ def error_handler(error):
 @json_api.route('/login', methods=['post'])
 def login():
     user = get_logged_in_user(current_bot)
-    from wechat.tasks import async_retrieve_data
-    async_retrieve_data.delay()
+    from wechat.tasks import retrieve_data
+    retrieve_data.delay()
     sse.publish({'type': 'logged_in', 'user': user}, type='login')
     return {'msg': ''}
 
@@ -323,6 +323,20 @@ def readall():
     uid = current_bot.self.puid
     Notification.clean_by_receiver_id(uid)
     return {}
+
+
+@json_api.route('/flush', methods=['post'])
+def flush():
+    data = request.get_json()
+    type = data['type']
+    from wechat.tasks import update_contact, update_group
+    if type == 'contact':
+        update_contact.delay(True)
+    elif type == 'group':
+        update_group.delay(True)
+
+    return {}
+
 
 json_api.add_url_rule('/user/<id>', view_func=UserAPI.as_view('user'))
 json_api.add_url_rule('/users', view_func=UsersAPI.as_view('users'))

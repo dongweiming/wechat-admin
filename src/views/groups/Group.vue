@@ -9,6 +9,9 @@
 				<el-form-item>
 					<el-button type="primary" v-on:click="getGroups">查询</el-button>
 				</el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleFlush">强制刷新</el-button>
+        </el-form-item>
 			</el-form>
 		</el-col>
 
@@ -49,7 +52,7 @@
 </template>
 
 <script>
-	import { getGroupList, removeGroup, batchRemoveGroup } from '../../api/api';
+	import { getGroupList, removeGroup, batchRemoveGroup, flushData } from '../../api/api';
 
 	export default {
 		data() {
@@ -74,7 +77,20 @@
         this.$router.push({ path: '/send_msg/contact',
             query: { ids: ids, type: 'group', gid: '', send_type: '' }})
       },
-
+      handleFlush () {
+         this.$confirm('确认重新拉取群聊列表吗?', '提示', {
+            type: 'warning'
+          }).then(() => {
+            let para = { type: 'group' };
+            flushData(para).then((res) => {
+              this.$notify({
+                title: 'Success',
+                message: '任务已发出，请稍后刷新页面',
+                type: 'success'
+              });
+            });
+          });
+       },
 			getGroups() {
 				let para = {
 					page: this.page,

@@ -12,6 +12,9 @@
 				<el-form-item>
 					<el-button type="primary" @click="handleAdd">添加好友</el-button>
 				</el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleFlush">强制刷新</el-button>
+        </el-form-item>
         <el-tag type="primary" style="float: right" v-if="this.group">{{this.group.nick_name}}</el-tag>
 			</el-form>
 		</el-col>
@@ -77,7 +80,7 @@
 </template>
 
 <script>
-	import { getUserList, removeUser, addUser, addUsers, batchRemoveUser, getAllUsers, addGroup } from '../../api/api';
+	import { getUserList, removeUser, addUser, addUsers, batchRemoveUser, getAllUsers, addGroup, flushData } from '../../api/api';
 
 	export default {
 		data() {
@@ -147,7 +150,7 @@
 				});
 			},
 
-			handleDel: function (index, row) {
+			handleDel (index, row) {
 				this.$confirm('确认删除该用户吗?', '提示', {
 					type: 'warning'
 				}).then(() => {
@@ -161,7 +164,21 @@
 				}).catch(() => {
 				});
 			},
-			handleAdd: function () {
+      handleFlush () {
+        this.$confirm('确认重新拉取吗?', '提示', {
+           type: 'warning'
+         }).then(() => {
+           let para = { type: this.queryType };
+           flushData(para).then((res) => {
+             this.$notify({
+               title: 'Success',
+               message: '任务已发出，请稍后刷新页面',
+               type: 'success'
+             }); 
+           });
+         });
+      },
+			handleAdd () {
 				this.addFormVisible = true;
 				this.addForm = {
 					verifyContent: '',
@@ -186,7 +203,7 @@
         }
       },
 
-			addSubmit: function () {
+			addSubmit () {
 				this.$refs.addForm.validate((valid) => {
 					if (valid) {
 						this.$confirm('确认提交吗？', '提示', {}).then(() => {
