@@ -33,7 +33,7 @@ from wxpy import * # noqa
 
 def get_bot():
     bot = Bot('bot.pkl', qr_path=os.path.join(
-        here, '../static/img/qr_code.png'))
+         here, '../static/img/qr_code.png'), console_qr=None)
     bot.enable_puid()
     bot.messages.max_history = 0
     return bot

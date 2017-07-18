@@ -4,15 +4,7 @@ from celery.task.control import revoke
 
 from wechat.celery import app
 
-from wxpy.signals import stopped
-from libs.wx import gen_avatar_path
-from views.api import json_api
-from models.redis import db as r, LISTENER_TASK_KEY
-from app import app as sse_api
-from ext import db, sse
-from models.core import User, Group, MP  # noqa
-from models.messaging import Message, Notification
-
+from itchat.signals import logged_out
 
 def restart_listener(sender):
     task_id = r.get(LISTENER_TASK_KEY)
@@ -21,6 +13,17 @@ def restart_listener(sender):
     task_id = app.send_task('wechat.tasks.listener')
     r.set(LISTENER_TASK_KEY, task_id)
 
+
+logged_out.connect(restart_listener)
+
+from wxpy.signals import stopped
+from libs.wx import gen_avatar_path
+from views.api import json_api
+from models.redis import db as r, LISTENER_TASK_KEY
+from app import app as sse_api
+from ext import db, sse
+from models.core import User, Group, MP  # noqa
+from models.messaging import Message, Notification
 
 stopped.connect(restart_listener)
 
