@@ -26,6 +26,8 @@ from models.core import User, Group, MP  # noqa
 from models.messaging import Message, Notification
 
 stopped.connect(restart_listener)
+MP_FIELD = ['sex', 'nick_name', 'signature', 'province', 'city']
+USER_FIELD = MP_FIELD + ['sex']
 
 from libs.listener import bot
 

@@ -11,8 +11,6 @@ from ext import db, sse
 from config import avatar_tmpl
 
 here = os.path.abspath(os.path.dirname(__file__))
-MP_FIELD = ['sex', 'nick_name', 'signature', 'province', 'city']
-USER_FIELD = MP_FIELD + ['sex']
 
 
 def publish(uuid, **kw):
