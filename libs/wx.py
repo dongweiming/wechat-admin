@@ -5,7 +5,6 @@ import os
 from datetime import datetime, timedelta
 
 from itchat.signals import scan_qr_code, confirm_login, logged_in, logged_out
-from wxpy.exceptions import ResponseError
 
 from ext import db, sse
 from config import avatar_tmpl

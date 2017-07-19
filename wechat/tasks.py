@@ -3,10 +3,10 @@ from celery.task import periodic_task
 from celery.task.control import revoke
 
 from wechat.celery import app
-
+from wxpy.exceptions import ResponseError
 from itchat.signals import logged_out
 
-def restart_listener(sender):
+def restart_listener(sender, **kw):
     task_id = r.get(LISTENER_TASK_KEY)
     if task_id:
         revoke(task_id)

@@ -1,10 +1,12 @@
 # coding=utf-8
 import os
 import re
+import sys
 
 from wxpy import Friend, Group, Chat, MP as _MP
 from wxpy.api import consts
 
+from config import PLUGIN_PATHS, PLUGINS
 from libs.consts import *
 from libs.globals import current_bot as bot
 from models.admin import GroupSettings
@@ -110,3 +112,24 @@ def send_msg(m):
             msg.file_ext = ext
             db.session.commit()
         Notification.add(receiver_id, msg.id)
+
+
+_sys_path = sys.path[:]
+for pluginpath in PLUGIN_PATHS:
+    sys.path.insert(0, pluginpath)
+
+for plugin in PLUGINS:
+    if isinstance(plugin, str):
+        try:
+            mod = __import__(plugin, globals(), locals(), 'module')
+        except ImportError as e:
+            print('Cannot load plugin `%s`\n%s'.format(plugin, e))
+            continue
+        plugin = mod.export()
+        bot.register(msg_types=getattr(plugin, 'msg_types', None),
+                     run_async=getattr(plugin, 'run_async', True),
+                     chats=getattr(plugin, 'chats', None),
+                     except_self=getattr(plugin, 'except_self', None)
+        )(plugin.main)
+
+sys.path = _sys_path
