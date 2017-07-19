@@ -27,7 +27,7 @@ invite_text = '''欢迎您！
 请言行遵守群内规定，违规者将受到处罚，拉入黑名单。'''
 
 PLUGIN_PATHS = [os.path.join(HERE, 'wechat-plugins')]
-PLUGINS = ['simsim']
+PLUGINS = ['simsimi']
 
 if not os.path.exists(UPLOAD_FOLDER):
     os.mkdir(UPLOAD_FOLDER)

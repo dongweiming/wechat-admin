@@ -118,18 +118,22 @@ _sys_path = sys.path[:]
 for pluginpath in PLUGIN_PATHS:
     sys.path.insert(0, pluginpath)
 
+
 for plugin in PLUGINS:
     if isinstance(plugin, str):
         try:
             mod = __import__(plugin, globals(), locals(), 'module')
         except ImportError as e:
-            print('Cannot load plugin `%s`\n%s'.format(plugin, e))
+            print('Cannot load plugin `{}`\n{}'.format(plugin, e))
             continue
         plugin = mod.export()
+        def func(msg):
+            msg.sender.send(plugin.main(msg))
+
         bot.register(msg_types=getattr(plugin, 'msg_types', None),
                      run_async=getattr(plugin, 'run_async', True),
                      chats=getattr(plugin, 'chats', None),
                      except_self=getattr(plugin, 'except_self', None)
-        )(plugin.main)
+        )(func)
 
 sys.path = _sys_path
