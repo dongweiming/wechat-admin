@@ -12,7 +12,8 @@ class RBase(Model):
         data = {}
         for name, field in self._fields.items():
             if name in self._data:
-                data[name] = field.db_value(self._data[name])
+                val = self._data[name]
+                data[name] = val if field._as_json else field.db_value(val)
             else:
                 if isinstance(field, ListField):
                     type_func = list

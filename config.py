@@ -12,19 +12,26 @@ PIC_TYPES = set(['png', 'jpg', 'jpeg', 'gif'])
 SQLALCHEMY_RECORD_QUERIES = True
 DATABASE_QUERY_TIMEOUT = 0.5
 
-group_tmpl = 'Python✌{}群'
 welcome_text = '🎉 欢迎 @{} 的加入！'
 invite_text = '''欢迎您！
-请输入关键字 Python 加入群：
+请输入关键字 Python 加入群。
 
-进群四件事：
+本群聊为技术讨论群，入群须知：
 
-1、阅读群公告，
-2、修改群名片，
-3、做自我介绍，
-4、要是发红包，总额请不要低于50
+1、禁止频繁灌水
+2、禁止发广告或者无关技术的链接
+3、禁止骚扰和人身攻击
+4、请对不甚了解的领域保持敬畏，以免看起来像个小丑
+5、不要把负面的情绪带进来
 
-请言行遵守群内规定，违规者将受到处罚，拉入黑名单。'''
+请言行遵守群内规定，违规者将被永远T出。
+
+更多功能请向群主发送 help 获得更多功能'''
+
+group_patterns = [
+    ['python', 'Python✌{}群'],
+    ['web', 'Web技术交流{}群'],
+]
 
 PLUGIN_PATHS = [os.path.join(HERE, 'wechat-plugins')]
 PLUGINS = ['simsimi', 'help']

@@ -1,12 +1,12 @@
 # coding=utf-8
-from walrus import TextField, ListField
+from walrus import TextField, ListField, JSONField
 from .redis import RBase
-from config import group_tmpl, welcome_text, invite_text
+from config import welcome_text, invite_text, group_patterns
 
 
 class GroupSettings(RBase):
     id = TextField(primary_key=True)
     welcome_text = TextField(default=welcome_text)
     invite_text = TextField(default=invite_text)
-    group_tmpl = TextField(default=group_tmpl)
+    group_patterns = JSONField(default=group_patterns)
     creators = ListField()

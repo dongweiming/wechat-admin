@@ -9,7 +9,7 @@ from itchat.signals import logged_out
 def restart_listener(sender, **kw):
     task_id = r.get(LISTENER_TASK_KEY)
     if task_id:
-        revoke(task_id)
+        revoke(str(task_id, 'utf-8'))
     task_id = app.send_task('wechat.tasks.listener')
     r.set(LISTENER_TASK_KEY, task_id)
 

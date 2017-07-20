@@ -14,6 +14,7 @@ from models.messaging import Message, Notification, db
 
 uid = bot.self.puid
 settings = GroupSettings.get(uid)
+pattern_map = {p: tmpl for p, tmpl in settings.group_patterns}
 new_member_regex = re.compile(r'^"(.+)"通过|邀请"(.+)"加入|')
 all_types = [k.capitalize() for k in dir(consts) if k.isupper() and k != 'SYSTEM']
 here = os.path.abspath(os.path.dirname(__file__))
@@ -37,8 +38,8 @@ def get_creators():
     return list(creators)
 
 
-def invite(user):
-    groups = sorted(bot.groups(update=True).search('Python'),
+def invite(user, pattern):
+    groups = sorted(bot.groups(update=True).search(pattern),
                     key=lambda x: x.name)
     if len(groups) > 0:
         for group in groups:
@@ -51,7 +52,8 @@ def invite(user):
                 group.add_members(user, use_invitation=True)
             return
         else:
-            next_topic = group_tmpl.format(re.search(r'\d+', s).group() + 1)
+            next_topic = pattern_map[pattern].format(
+                re.search(r'\d+', s).group() + 1)
             new_group = bot.create_group(get_creators(), topic=next_topic)
     else:
         print('Invite Failed')
@@ -60,16 +62,18 @@ def invite(user):
 @bot.register(msg_types=FRIENDS)
 def new_friends(msg):
     user = msg.card.accept()
-    if 'python' in msg.text.lower():
-        invite(user)
+    pattern = next((p for p in pattern_map if p in msg.text.lower()), None)
+    if pattern is not None:
+        invite(user, pattern)
     else:
         user.send(settings.invite_text)
 
 
 @bot.register(Friend, msg_types=TEXT)
 def exist_friends(msg):
-    if 'python' in msg.text.lower():
-        invite(msg.sender)
+    pattern = next((p for p in pattern_map if p in msg.text.lower()), None)
+    if pattern is not None:
+        invite(msg.sender, pattern)
 
 
 @bot.register(groups, NOTE)
@@ -144,11 +148,11 @@ for p in PLUGINS:
             if not re.search(r'{}'.format(patterns), text):
                 return
         ex_patterns = getattr(plugin, 'exclude_patterns', None) or []
-        ex_patterns = set(_patterns + ex_patterns).difference(patterns)
-        if ex_patterns:
-            patterns = '|'.join(ex_patterns)
-            if re.search(r'{}'.format(patterns), text):
-                return
+        ex_patterns = set(_patterns + ex_patterns +
+                          pattern_map.keys()).difference(patterns)
+        patterns = '|'.join(ex_patterns)
+        if re.search(r'{}'.format(patterns), text):
+            return
         from views.api import json_api as app
         with app.app_context():
             app.plugin_modules = _cached
