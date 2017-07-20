@@ -74,6 +74,15 @@ mysql> ^DBye
 ❯ venv/bin/pip install -r requirements.txt
 ```
 
+设置说明：自定义配置应该存放在local\_settings.py（需创建）中，可重载config.py中的设置
+
+安装插件（可选）：
+
+```bash
+❯ git clone https://github.com/dongweiming/wechat-plugins
+# 如果有额外插件配置，需要修改PLUGIN_PATHS和PLUGINS
+```
+
 初始化数据库：
 
 ```python
@@ -151,5 +160,6 @@ WARN: 每次build会删除static目录，所以收到的内容被会删除，请
 
 ## TODO
 
-1. 自定义help内容和关键词
-2. 灵活的插件系统，方便自定义
+1. 设置页面可添加说明
+2. 组内容匹配
+3. mkdoc文档
