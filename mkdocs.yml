@@ -1,0 +1,9 @@
+site_name: wechat-admin
+site_description: 微信管理系统
+site_author: Dongweiming
+repo_name: dongweiming/wechat-admin
+repo_url: https://github.com/dongweiming/wechat-admin
+pages:
+  - Index: index.md
+  - Plugins: plugins.md
+theme: material

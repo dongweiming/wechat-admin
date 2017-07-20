@@ -7,5 +7,7 @@ PyMySQL==0.7.11
 gunicorn==19.7.1
 msgpack-python==0.4.8
 walrus==0.4.1
+mkdocs==0.16.3
+mkdocs-material==1.7.4
 -e git+https://github.com/dongweiming/wxpy@signals#egg=wxpy
 -e git+https://github.com/dongweiming/ItChat@signals#egg=itchat

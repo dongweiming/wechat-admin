@@ -117,3 +117,4 @@ ENV/
 *pkl
 static/img/*
 uploads/*
+site

@@ -79,9 +79,11 @@ mysql> ^DBye
 安装插件（可选）：
 
 ```bash
-❯ git clone https://github.com/dongweiming/wechat-plugins
+❯ git clone --recursive https://github.com/dongweiming/wechat-plugins
 # 如果有额外插件配置，需要修改PLUGIN_PATHS和PLUGINS
 ```
+
+插件开发请移步：[Plugins Page](https://dongweiming.github.io/wechat-admin/plugins/)
 
 初始化数据库：
 
@@ -162,4 +164,3 @@ WARN: 每次build会删除static目录，所以收到的内容被会删除，请
 
 1. 设置页面可添加说明
 2. 组内容匹配
-3. mkdoc文档
