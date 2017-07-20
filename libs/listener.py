@@ -70,8 +70,6 @@ def new_friends(msg):
 def exist_friends(msg):
     if 'python' in msg.text.lower():
         invite(msg.sender)
-    elif 'help' in msg.text.lower():
-        return settings.invite_text
 
 
 @bot.register(groups, NOTE)
@@ -118,22 +116,50 @@ _sys_path = sys.path[:]
 for pluginpath in PLUGIN_PATHS:
     sys.path.insert(0, pluginpath)
 
-
-for plugin in PLUGINS:
-    if isinstance(plugin, str):
+_cached = {}
+_namespace = {}
+_patterns = []
+for p in PLUGINS:
+    if isinstance(p, str):
         try:
-            mod = __import__(plugin, globals(), locals(), 'module')
+            mod = __import__(p, globals(), locals(), 'module')
         except ImportError as e:
-            print('Cannot load plugin `{}`\n{}'.format(plugin, e))
+            print('Cannot load plugin `{}`\n{}'.format(p, e))
             continue
         plugin = mod.export()
-        def func(msg):
+    else:
+        plugin = p
+    try:
+        name = getattr(plugin, 'name')
+    except AttributeError:
+        print("Plugin `{}` has no attribute 'name'".format(p))
+        continue
+    _cached[name] = plugin
+    def func(msg, name=name, plugin=plugin):
+        patterns = getattr(plugin, 'patterns', None) or []
+        text = msg.text.lower()
+        if patterns:
+            if getattr(plugin, 'exclusive', False):
+                _patterns.extend(patterns)
+            if not re.search(r'{}'.format(patterns), text):
+                return
+        ex_patterns = getattr(plugin, 'exclude_patterns', None) or []
+        ex_patterns = set(_patterns + ex_patterns).difference(patterns)
+        if ex_patterns:
+            patterns = '|'.join(ex_patterns)
+            if re.search(r'{}'.format(patterns), text):
+                return
+        from views.api import json_api as app
+        with app.app_context():
+            app.plugin_modules = _cached
             msg.sender.send(plugin.main(msg))
 
-        bot.register(msg_types=getattr(plugin, 'msg_types', None),
-                     run_async=getattr(plugin, 'run_async', True),
-                     chats=getattr(plugin, 'chats', None),
-                     except_self=getattr(plugin, 'except_self', None)
-        )(func)
+    exec('def {}(msg):\n    return func(msg)'.format(name),
+         {'func': func}, _namespace)
+    bot.register(msg_types=getattr(plugin, 'msg_types', None),
+                 run_async=getattr(plugin, 'run_async', True),
+                 chats=getattr(plugin, 'chats', None),
+                 except_self=getattr(plugin, 'except_self', None)
+    )(_namespace[name])
 
 sys.path = _sys_path

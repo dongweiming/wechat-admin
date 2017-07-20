@@ -17,7 +17,7 @@ def restart_listener(sender, **kw):
 logged_out.connect(restart_listener)
 
 from wxpy.signals import stopped
-from libs.wx import gen_avatar_path
+from libs.wx import gen_avatar_path, get_bot
 from views.api import json_api
 from models.redis import db as r, LISTENER_TASK_KEY
 from app import app as sse_api
@@ -29,7 +29,7 @@ stopped.connect(restart_listener)
 MP_FIELD = ['sex', 'nick_name', 'signature', 'province', 'city']
 USER_FIELD = MP_FIELD + ['sex']
 
-from libs.listener import bot
+bot = get_bot()
 
 
 def _retrieve_data(update=False):
@@ -120,6 +120,7 @@ def _update_contact(bot, update=False):
 
 @app.task
 def listener():
+    from libs.listener import bot
     with json_api.app_context():
         bot.join()
 
