@@ -502,10 +502,11 @@ mysql&gt; ^DBye
 
 <p>设置说明：自定义配置应该存放在local_settings.py（需创建）中，可重载config.py中的设置</p>
 <p>安装插件（可选）：</p>
-<pre><code class="bash">❯ git clone https://github.com/dongweiming/wechat-plugins
+<pre><code class="bash">❯ git clone --recursive https://github.com/dongweiming/wechat-plugins
 # 如果有额外插件配置，需要修改PLUGIN_PATHS和PLUGINS
 </code></pre>
 
+<p>插件开发请移步：<a href="https://dongweiming.github.io/wechat-admin/plugins/">Plugins Page</a></p>
 <p>初始化数据库：</p>
 <pre><code class="python">❯ export FLASK_APP=manager.py
 ❯ venv/bin/flask initdb
