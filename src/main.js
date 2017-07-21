@@ -12,10 +12,14 @@ import 'font-awesome/css/font-awesome.min.css'
 import Wechat from './plugins/wechat';
 import {emoji} from './plugins/emoji/src/api/emoji.js';
 
+import descBlock from './components/desc-block.vue';
+
 Vue.use(ElementUI)
 Vue.use(VueRouter)
 Vue.use(Vuex)
 Vue.use(Wechat)
+
+Vue.component('desc-block', descBlock)
 
 Vue.prototype.emoji = emoji;
 
