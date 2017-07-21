@@ -15,7 +15,7 @@ from models.messaging import Message, Notification, db
 uid = bot.self.puid
 settings = GroupSettings.get(uid)
 pattern_map = {p: tmpl for p, tmpl in settings.group_patterns}
-new_member_regex = re.compile(r'^"(.+)"通过|邀请"(.+)"加入|')
+new_member_regex = re.compile(r'^"(.+)"通过|邀请"(.+)"加入')
 all_types = [k.capitalize() for k in dir(consts) if k.isupper() and k != 'SYSTEM']
 here = os.path.abspath(os.path.dirname(__file__))
 UPLOAD_PATH = os.path.join(here, '../static/img/uploads')
@@ -74,6 +74,8 @@ def new_friends(msg):
 
 @bot.register(Friend, msg_types=TEXT)
 def exist_friends(msg):
+    if msg.sender.name.find('黑名单') != -1:
+        return '拉黑了，放弃吧 ╮（﹀＿﹀）╭'
     pattern = next((p for p in pattern_map if p in msg.text.lower()), None)
     if pattern is not None:
         invite(msg.sender, pattern)
@@ -126,6 +128,7 @@ for pluginpath in PLUGIN_PATHS:
 _cached = {}
 _namespace = {}
 _patterns = []
+
 for p in PLUGINS:
     if isinstance(p, str):
         try:
@@ -142,6 +145,7 @@ for p in PLUGINS:
         print("Plugin `{}` has no attribute 'name'".format(p))
         continue
     _cached[name] = plugin
+
     def func(msg, name=name, plugin=plugin):
         patterns = getattr(plugin, 'patterns', None) or []
         text = msg.text.lower()
@@ -152,13 +156,14 @@ for p in PLUGINS:
                 return
         ex_patterns = getattr(plugin, 'exclude_patterns', None) or []
         ex_patterns = set(_patterns + ex_patterns +
-                          pattern_map.keys()).difference(patterns)
+                          list(pattern_map.keys())).difference(patterns)
         patterns = '|'.join(ex_patterns)
         if re.search(r'{}'.format(patterns), text):
             return
         from views.api import json_api as app
         with app.app_context():
             app.plugin_modules = _cached
+            app.nick_name = bot.self.nick_name
             msg.sender.send(plugin.main(msg))
 
     exec('def {}(msg):\n    return func(msg)'.format(name),
