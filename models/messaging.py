@@ -46,7 +46,7 @@ class Message(BaseMixin, db.Model):
     group_id = db.Column(db.String(20), default=0, index=True)
     sender_id = db.Column(db.String(20), index=True)
     receiver_id = db.Column(db.String(20), index=True)
-    content = db.Column(db.String(255))
+    content = db.Column(db.String(1024))
     receive_time = db.Column(db.DateTime)
     type = db.Column(db.SmallInteger)
     url = db.Column(db.String(512), default='')
