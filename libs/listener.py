@@ -55,8 +55,11 @@ def invite(user, pattern):
             next_topic = pattern_map[pattern].format(
                 re.search(r'\d+', s).group() + 1)
             new_group = bot.create_group(get_creators(), topic=next_topic)
+            new_group.add_members(user, use_invitation=True)
     else:
-        print('Invite Failed')
+        next_topic = pattern_map[pattern].format(1)
+        new_group = bot.create_group(get_creators(), topic=next_topic)
+        new_group.add_members(user, use_invitation=True)
 
 
 @bot.register(msg_types=FRIENDS)
