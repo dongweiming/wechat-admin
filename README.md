@@ -1,3 +1,7 @@
+<p align="center">
+  <img width="280" src="./assets/logo.png" alt="logo" />
+</p>
+
 # wechat-admin
 
 > 微信管理系统
