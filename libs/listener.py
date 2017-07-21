@@ -6,7 +6,7 @@ import sys
 from wxpy import Friend, Group, Chat, MP as _MP
 from wxpy.api import consts
 
-from config import PLUGIN_PATHS, PLUGINS
+from config import PLUGIN_PATHS, PLUGINS, GROUP_MEMBERS_LIMIT
 from libs.consts import *
 from libs.globals import current_bot as bot
 from models.admin import GroupSettings
@@ -43,7 +43,7 @@ def invite(user, pattern):
                     key=lambda x: x.name)
     if len(groups) > 0:
         for group in groups:
-            if len(group.members) == 500:
+            if len(group.members) == GROUP_MEMBERS_LIMIT:
                 continue
             if user in group:
                 content = "您已经加入了{} [微笑]".format(group.nick_name)

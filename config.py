@@ -12,6 +12,8 @@ PIC_TYPES = set(['png', 'jpg', 'jpeg', 'gif'])
 SQLALCHEMY_RECORD_QUERIES = True
 DATABASE_QUERY_TIMEOUT = 0.5
 
+GROUP_MEMBERS_LIMIT = 500
+
 welcome_text = '🎉 欢迎 @{} 的加入！'
 invite_text = '''欢迎您！
 请输入关键字 Python 加入群。
