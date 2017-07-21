@@ -45,7 +45,7 @@ class User(CoreMixin, db.Model):
     id = db.Column(db.String(20), primary_key=True)  # puid
     sex = db.Column(db.SmallInteger, default=2)
     nick_name = db.Column(db.String(60), index=True)
-    signature = db.Column(db.String(255), default='')
+    signature = db.Column(db.String(512), default='')
     province = db.Column(db.String(20), default='')
     city = db.Column(db.String(20), default='')
     groups =db.relationship('Group', secondary=group_relationship,
