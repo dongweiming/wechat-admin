@@ -92,10 +92,7 @@
           this.$message.error('先完成现有的哦😯');
           return
         }
-        this.group_patterns.push({
-          value: '',
-          key: Date.now()
-        });
+        this.group_patterns.push(['', '']);
       }
     },
 		mounted() {
