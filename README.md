@@ -169,3 +169,4 @@ WARN: 每次build会删除static目录，所以收到的内容被会删除，请
 ## TODO
 
 1. 投票T人
+2. 提供Docker容器

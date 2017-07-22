@@ -3,13 +3,13 @@ import os
 import re
 import sys
 
-from wxpy import Friend, Group, Chat, MP as _MP
+from wxpy import Friend, Group, Chat, MP as _MP, sync_message_in_groups
 from wxpy.api import consts
 
 from config import PLUGIN_PATHS, PLUGINS, GROUP_MEMBERS_LIMIT
 from libs.consts import *
 from libs.globals import current_bot as bot
-from models.admin import GroupSettings
+from models.setting import GroupSettings
 from models.messaging import Message, Notification, db
 
 uid = bot.self.puid
@@ -119,6 +119,13 @@ def send_msg(m):
             msg.file_ext = ext
             db.session.commit()
         Notification.add(receiver_id, msg.id)
+
+        if isinstance(m.sender, _MP):
+            for mp_id, ids in settings.mp_forward:
+                if m.sender.id == mp_id:
+                    groups = map(lambda x: bot.groups().search(puid=x)[0], ids)
+                    sync_message_in_groups(m, groups)
+                    return
 
 
 _sys_path = sys.path[:]
