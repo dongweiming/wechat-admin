@@ -145,7 +145,7 @@ def update_group(update=False):
         _update_group(bot, update=update)
 
 
-@periodic_task(run_every=timedelta(seconds=60), time_limit=5)
+@periodic_task(run_every=timedelta(seconds=60000), time_limit=5)
 def send_notify():
     count = Notification.count_by_receiver_id(bot.self.puid)
     with sse_api.app_context():

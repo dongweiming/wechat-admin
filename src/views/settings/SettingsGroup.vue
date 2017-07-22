@@ -13,7 +13,7 @@
     <desc-block>
       <div slot="wx" class="wx-item"> 
         <label class="el-form-item__label">邀请文本</label>
-        <el-input type="textarea" :rows="4" style="width: 500px;" v-model="invite_text">
+        <el-input type="textarea" :rows="6" style="width: 500px;" v-model="invite_text">
         </el-input>
       </div>
       <div slot="desc">
@@ -71,6 +71,20 @@
         <p>每个公众号发送的文章可转发到多个群聊中，规则可选择多条</p>
       </div>
     </desc-block>
+    <desc-block>
+       <div slot="wx" class="wx-item">
+         <p class="rule-header">踢人设置</p>
+         <label class="el-form-item__label">文案</label>
+         <el-input type="textarea" :rows="6" style="width: 550px; margin-bottom: 20px;" v-model="kick_text">
+         </el-input>
+         <label class="el-form-item__label">配置</label>
+         <el-input style="width: 270px;" v-model="kick_period" placeholder="有效期(单位：分钟)"></el-input>
+         <el-input style="width: 270px;" v-model="kick_quorum_n" placeholder="投票人数"></el-input>
+       </div>
+       <div slot="desc">
+          <p>群主不在的时候群成员可以提出踢人请求，在有效期内投票人数达到数量要求即可。默认包含4个变量<code>{member}</code>（用户昵称）、<code>{current}</code>（当前已投票的人数）、<code>{total}</code>（需要投票总人数）、<code>{period}</code>（投票有效期），按需添加即可</p>
+       </div>
+     </desc-block> 
     <div class="save-btn">
       <el-button @click="saveSettings" type="primary" :loading="saveLoading">保存设置</el-button>
     </div>
@@ -86,8 +100,11 @@
         mps: [],
         groups: [],
         users: [],
+        kick_period: 5,
+        kick_text: '',
         welcome_text: '',
         invite_text: '',
+        kick_quorum_n: '',
         group_patterns: [],
         mp_forward: [],
         saveLoading: false,
@@ -121,10 +138,13 @@
            });
            this.allMembers = users;
            this.users = res.data.creators;
+           this.kick_text = res.data.kick_text;
            this.welcome_text = res.data.welcome_text;
            this.invite_text = res.data.invite_text;
            this.group_patterns = res.data.group_patterns;
            this.mp_forward = res.data.mp_forward || [];
+           this.kick_period = res.data.kick_period;
+           this.kick_quorum_n = res.data.kick_quorum_n;
            this.mps = mps;
            this.groups = groups;
          });

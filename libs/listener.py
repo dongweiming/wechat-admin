@@ -2,6 +2,7 @@
 import os
 import re
 import sys
+from datetime import datetime, timedelta
 
 from wxpy import Friend, Group, Chat, MP as _MP, sync_message_in_groups
 from wxpy.api import consts
@@ -10,17 +11,20 @@ from config import PLUGIN_PATHS, PLUGINS, GROUP_MEMBERS_LIMIT
 from libs.consts import *
 from libs.globals import current_bot as bot
 from models.setting import GroupSettings
+from models.redis import db as r
 from models.messaging import Message, Notification, db
 
 uid = bot.self.puid
 settings = GroupSettings.get(uid)
 pattern_map = {p: tmpl for p, tmpl in settings.group_patterns}
 new_member_regex = re.compile(r'^"(.+)"通过|邀请"(.+)"加入')
+kick_member_regex = re.compile(r'^(移出|移除|踢出|T)\s*@(.+?)')
 all_types = [k.capitalize() for k in dir(consts) if k.isupper() and k != 'SYSTEM']
 here = os.path.abspath(os.path.dirname(__file__))
 UPLOAD_PATH = os.path.join(here, '../static/img/uploads')
 if not os.path.exists(UPLOAD_PATH):
     os.mkdir(UPLOAD_PATH)
+KICK_KEY = 'kick:members'
 
 groups = [g for g in bot.groups() if g.owner.puid == uid]
 
@@ -36,6 +40,10 @@ def get_creators():
         creators = map(lambda x: bot.friends().search(
             u['nick_name'], Sex=u['sex'], Signature=u['signature'])[0], users)
     return list(creators)
+
+
+def get_time():
+    return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 
 def invite(user, pattern):
@@ -88,6 +96,30 @@ def welcome(msg):
         text = list(filter(lambda x:x, match.groups()))
         if text:
             return settings.welcome_text.format(text[0])
+
+
+@bot.register(groups, TEXT, except_self=False)
+def kick(msg):
+    match = kick_member_regex.search(msg.text)
+    if not match:
+        return
+
+    to_kick = m.receiver
+    receiver_id = to_kick.puid
+    if receiver_id == uid:
+        return '群主不能被移出哦😯'
+    r.hincrby(KICK_KEY, receiver_id, 1)
+    current = int(r.hget(KICK_KEY, receiver_id))
+    if current < settings.kick_quorum_n:
+        period = settings.kick_period * 60
+        if current == 1:
+            ttl = datetime.now() + timedelta(seconds=period)
+            r.expire(KICK_KEY, ttl)
+        return settings.kick_text.format(current=current, member=to_kick.nick_name, total=settings.kick_quorum_n, period=period)
+    msg.chat.remove_members([to_kick])
+    to_kick.set_remark_name('[黑名单]-' + get_time())
+    msg.chat.remove_members([to_kick])
+    return '成功移出 @{}'.format(to_kick.nick_name)
 
 
 @bot.register(msg_types=all_types, except_self=False)

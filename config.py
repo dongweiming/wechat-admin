@@ -29,7 +29,16 @@ invite_text = '''欢迎您！
 
 请言行遵守群内规定，违规者将被永远T出。
 
+群成员可发起移出成员投票，语句是 `移出|移除|踢出|T @XXX`
+
 更多功能请向群主发送 help 获得更多功能'''
+kick_text = '''
+正在投票移出 @{member}
+
+当前 {current} / {total} 票 ({period} 分钟有效)
+
+移出成员会造成其不能再进去本群，请勿滥用投票功能！🤔🤔🤔
+'''
 
 group_patterns = [
     ['python', 'Python✌{}群'],

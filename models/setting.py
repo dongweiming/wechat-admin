@@ -1,7 +1,7 @@
 # coding=utf-8
-from walrus import TextField, ListField, JSONField
+from walrus import TextField, ListField, JSONField, IntegerField
 from .redis import RBase
-from config import welcome_text, invite_text, group_patterns
+from config import welcome_text, invite_text, kick_text, group_patterns
 
 
 class GroupSettings(RBase):
@@ -11,3 +11,6 @@ class GroupSettings(RBase):
     group_patterns = JSONField(default=group_patterns)
     creators = ListField()
     mp_forward = JSONField(default=[])
+    kick_quorum_n = IntegerField(default=5)
+    kick_period = IntegerField(default=5)
+    kick_text = TextField(default=kick_text)
