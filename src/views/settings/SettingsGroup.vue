@@ -29,10 +29,10 @@
             <el-input style="width: 200px;" v-model="p[0]"></el-input>
             <label class="rule-label">群模板</label>
             <el-input style="width: 200px;" v-model="p[1]"></el-input>
-            <el-button size="small" type="danger" @click.prevent="removeRule(p)" v-if="index >= 1">删除规则</el-button>
+            <el-button size="small" type="danger" @click.prevent="removeRule(p, group_patterns)" v-if="index >= 1">删除规则</el-button>
           </div>
         </div>
-        <el-button type="info" @click="addRule">新增规则</el-button>
+        <el-button type="info" @click="addRule('group_patterns')">新增规则</el-button>
       </div>
       <div slot="desc">
         <p>配置上面提及的加群的关键词策略，模式输入框支持正则表达式，模板需要保留一个<code>{}</code>，这是Python format的需要，数字默认是1，下一个群是2，以此类推</p>
@@ -42,14 +42,38 @@
       <div slot="wx" class="wx-item">
         <el-transfer filterable :filter-method="filterMethod" filter-placeholder="请输入好友昵称" v-model="users" :data="allMembers" :titles="['好友列表', '已选好友']">
         </el-transfer>
-        <div class="save-btn">
-          <el-button @click="saveSettings" type="primary" :loading="saveLoading">保存设置</el-button>
-        </div>
       </div>
       <div slot="desc">
         <p>自动创建新群需要至少3个好友，这里需要从<code>好友列表</code>中选择还有放入右侧的<code>已选好友</code>列表中。不选择的话新群创建无法成功！</p>
       </div>
     </desc-block>
+    <desc-block>
+      <div slot="wx" class="wx-item">
+        <p class="rule-header">公众号转发群聊设置</p> 
+        <div class="rule-wrapper el-textarea">
+          <div class="rule" v-for="(p, index) in mp_forward">
+            <label class="rule-label">公众号</label>
+            <el-select v-model="p[0]" clearable placeholder="请选择公众号">
+              <el-option v-for="item in mps" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+            <label class="rule-label">群聊</label>
+            <el-select v-model="p[1]" multiple placeholder="请选择群聊">
+              <el-option v-for="item in groups" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+            <el-button size="small" type="danger" @click.prevent="removeRule(p, mp_forward)" v-if="index >= 1">删除规则</el-button>
+          </div>
+        </div>
+        <el-button type="info" @click="addRule('mp_forward')">新增规则</el-button>
+      </div>
+      <div slot="desc">
+        <p>每个公众号发送的文章可转发到多个群聊中，规则可选择多条</p>
+      </div>
+    </desc-block>
+    <div class="save-btn">
+      <el-button @click="saveSettings" type="primary" :loading="saveLoading">保存设置</el-button>
+    </div>
 	</section>
 </template>
 
@@ -59,10 +83,13 @@
 		data() {
       return {
         allMembers: [],
+        mps: [],
+        groups: [],
         users: [],
         welcome_text: '',
         invite_text: '',
-        group_patterns: {},
+        group_patterns: [],
+        mp_forward: [],
         saveLoading: false,
         filterMethod(query, item) {
           return item.label.indexOf(query) > -1;
@@ -70,8 +97,8 @@
       };
 		},
 		methods: {
-      getMembers () {
-        const users = [], creators = [];
+      getData () {
+        const users = [], mps = [], groups = [];
  
          getGroupSetings().then((res) => {
            res.data.users.forEach((member, index) => {
@@ -80,11 +107,26 @@
                key: member.id
              });
            });
+           res.data.groups.forEach((member, index) => {
+             groups.push({
+               label: member.nick_name,
+               value: member.id
+             });
+           });
+           res.data.mps.forEach((member, index) => {
+             mps.push({
+               label: member.nick_name,
+               value: member.id
+             });
+           });
            this.allMembers = users;
            this.users = res.data.creators;
            this.welcome_text = res.data.welcome_text;
            this.invite_text = res.data.invite_text;
            this.group_patterns = res.data.group_patterns;
+           this.mp_forward = res.data.mp_forward || [];
+           this.mps = mps;
+           this.groups = groups;
          });
       },
       saveSettings () {
@@ -93,6 +135,7 @@
             'invite_text': this.invite_text,
             'group_patterns': this.group_patterns,
             'creators': this.users,
+            'mp_forward': this.mp_forward
         };
         this.saveLoading = true;
         updateGroupSetings(para).then((res) => {
@@ -104,32 +147,45 @@
            this.saveLoading = false;
         });
       },
-      removeRule(item) {
-        var index = this.group_patterns.indexOf(item)
+      removeRule(item, items) {
+        var index = items.indexOf(item)
         if (index !== -1) {
-          this.group_patterns.splice(index, 1)
+          items.splice(index, 1)
         }
       },
-      addRule() {
-        let p = this.group_patterns[this.group_patterns.length - 1];
-        if (!p[0] || !p[1]) {
-          this.$message.error('先完成现有的哦😯');
-          return
+      addRule(items) {
+        let len = this[items].length, newItem;
+        if (len) {
+          let p = this[items][len - 1];
+          if (!p[0] || !p[1]) {
+            this.$message.error('先完成现有的哦😯');
+            return
+          }
         }
-        this.group_patterns.push(['', '']);
+        if (items === 'mp_forward') {
+          if (!this.mps.length) {
+            this.$message.error('你并没有关注公众号😯');
+            return
+          }
+          if (!this.groups.length) {
+            this.$message.error('你并没有加入群聊😯');
+            return
+          } 
+          newItem = ['', []];
+        } else {
+          newItem = ['', ''];
+        }
+        this[items].push(newItem);
       }
     },
 		mounted() {
-			this.getMembers();
+			this.getData();
 		}
 	}
 
 </script>
 
 <style scoped>
-.wx-text {
-  margin-bottom: 20px;
-}
 .wx-item {
   padding: 10px 0 10px 10px;
 }
@@ -156,5 +212,8 @@
 }
 .rule-header {
   color: #48576a;
+}
+section {
+  margin-top: 20px;
 }
 </style>

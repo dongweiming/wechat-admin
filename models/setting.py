@@ -10,3 +10,4 @@ class GroupSettings(RBase):
     invite_text = TextField(default=invite_text)
     group_patterns = JSONField(default=group_patterns)
     creators = ListField()
+    mp_forward = JSONField(default=[])
