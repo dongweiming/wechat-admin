@@ -25,6 +25,7 @@ invite_text = '''欢迎您！
 3、禁止骚扰和人身攻击
 4、请对不甚了解的领域保持敬畏，以免看起来像个小丑
 5、不要把负面的情绪带进来
+6、禁止私自把群成员拉新群推销
 
 请言行遵守群内规定，违规者将被永远T出。
 
@@ -36,7 +37,7 @@ group_patterns = [
 ]
 
 PLUGIN_PATHS = [os.path.join(HERE, 'wechat-plugins')]
-PLUGINS = ['simsimi', 'help']
+PLUGINS = ['simsimi', 'help', 'tuling']
 
 if not os.path.exists(UPLOAD_FOLDER):
     os.mkdir(UPLOAD_FOLDER)

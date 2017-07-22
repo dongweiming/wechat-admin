@@ -67,5 +67,5 @@ def export():  # 需要包含export函数，返回插件类即可
 | ------| ------ |
 | Simsimi | 小黄鸡哟哟 |
 | Help | 帮助插件，根据所有插件的description属性的内容生成 |
-
+| Tuling | @群主即可开聊 |
 
