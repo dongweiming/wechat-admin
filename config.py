@@ -37,7 +37,7 @@ group_patterns = [
 ]
 
 PLUGIN_PATHS = [os.path.join(HERE, 'wechat-plugins')]
-PLUGINS = ['simsimi', 'help', 'tuling']
+PLUGINS = ['chatter', 'help', 'tuling']  # simsimi和chatter只能2选一
 
 if not os.path.exists(UPLOAD_FOLDER):
     os.mkdir(UPLOAD_FOLDER)

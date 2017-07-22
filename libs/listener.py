@@ -160,11 +160,14 @@ for p in PLUGINS:
         patterns = '|'.join(ex_patterns)
         if re.search(r'{}'.format(patterns), text):
             return
+
         from views.api import json_api as app
         with app.app_context():
             app.plugin_modules = _cached
             app.nick_name = bot.self.nick_name
-            msg.sender.send(plugin.main(msg))
+            result = plugin.main(msg)
+            if result:
+                msg.sender.send(result)
 
     exec('def {}(msg):\n    return func(msg)'.format(name),
          {'func': func}, _namespace)
