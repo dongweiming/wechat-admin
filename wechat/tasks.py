@@ -28,7 +28,6 @@ from models.messaging import Message, Notification
 stopped.connect(restart_listener)
 MP_FIELD = ['nick_name', 'signature', 'province', 'city']
 USER_FIELD = MP_FIELD + ['sex']
-
 bot = get_bot()
 
 
@@ -158,7 +157,7 @@ def update_group(update=False):
         _update_group(bot, update=update)
 
 
-@periodic_task(run_every=timedelta(seconds=60000), time_limit=5)
+@periodic_task(run_every=timedelta(seconds=60), time_limit=5)
 def send_notify():
     count = Notification.count_by_receiver_id(bot.self.puid)
     with sse_api.app_context():

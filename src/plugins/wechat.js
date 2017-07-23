@@ -23,7 +23,7 @@ function eventSourceListener() {
         let data = JSON.parse(event.data);
         if (data.type == 'scan_qr_code') {
             self.uuid = data.uuid;
-            self.qrCode = `${API_URL}/static/img/qr_code.png`;
+            self.qrCode = `data:image/png;base64,${data.extra}`;
         } else if (data.type == 'confirm_login') {
             self.sub_title = 'Scan successful';
             self.sub_desc = 'Confirm login on mobile WeChat';
