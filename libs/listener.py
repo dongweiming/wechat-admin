@@ -18,13 +18,14 @@ uid = bot.self.puid
 settings = GroupSettings.get(uid)
 pattern_map = {p: tmpl for p, tmpl in settings.group_patterns}
 new_member_regex = re.compile(r'^"(.+)"通过|邀请"(.+)"加入')
-kick_member_regex = re.compile(r'^(移出|移除|踢出|T)\s*@(.+?)')
+kick_member_regex = re.compile(r'^(移出|移除|踢出|T)(\s*)@(.+?)(?:\u2005?\s*$)')
 all_types = [k.capitalize() for k in dir(consts) if k.isupper() and k != 'SYSTEM']
 here = os.path.abspath(os.path.dirname(__file__))
 UPLOAD_PATH = os.path.join(here, '../static/img/uploads')
 if not os.path.exists(UPLOAD_PATH):
     os.mkdir(UPLOAD_PATH)
 KICK_KEY = 'kick:members'
+KICK_SENDER_KEY = 'kick:senders'
 
 groups = [g for g in bot.groups() if g.owner.puid == uid]
 
@@ -104,17 +105,23 @@ def kick(msg):
     if not match:
         return
 
-    to_kick = m.receiver
+    name = match.group(3)
+    to_kick = msg.chat.members.search(name=name, nick_name=name)
+    if not to_kick:
+        return '没找到对应用户，请联系群主😯'
+    to_kick = to_kick[0]
     receiver_id = to_kick.puid
     if receiver_id == uid:
         return '群主不能被移出哦😯'
-    r.hincrby(KICK_KEY, receiver_id, 1)
-    current = int(r.hget(KICK_KEY, receiver_id))
+    rs = r.sadd(KICK_SENDER_KEY, msg.member.puid)
+    if not rs:
+        return
+    current = r.hincrby(KICK_KEY, receiver_id, 1)
+
     if current < settings.kick_quorum_n:
         period = settings.kick_period * 60
         if current == 1:
-            ttl = datetime.now() + timedelta(seconds=period)
-            r.expire(KICK_KEY, ttl)
+            r.expire(KICK_KEY, period)
         return settings.kick_text.format(current=current, member=to_kick.nick_name, total=settings.kick_quorum_n, period=period)
     msg.chat.remove_members([to_kick])
     to_kick.set_remark_name('[黑名单]-' + get_time())

@@ -155,7 +155,10 @@
             'invite_text': this.invite_text,
             'group_patterns': this.group_patterns,
             'creators': this.users,
-            'mp_forward': this.mp_forward
+            'mp_forward': this.mp_forward,
+            'kick_text': this.kick_text,
+            'kick_period': this.kick_period,
+            'kick_quorum_n': this.kick_quorum_n
         };
         this.saveLoading = true;
         updateGroupSetings(para).then((res) => {
@@ -226,12 +229,13 @@
   box-sizing: border-box;
 }
 .rule-wrapper {
-  padding: 20px 0;
+  padding-bottom: 20px;
   width: 620px;
   margin-left: -11px;
 }
 .rule-header {
   color: #48576a;
+  margin-bottom: 20px;
 }
 section {
   margin-top: 20px;
