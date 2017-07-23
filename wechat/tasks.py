@@ -40,10 +40,23 @@ def _retrieve_data(update=False):
 
 def _update_group(bot, update=False):
     session = db.session
-    for g in bot.groups(update):
+    wx_groups = bot.groups(update)
+    myself = session.query(User).get(bot.self.puid)
+    wx_ids = set([g.puid for g in wx_groups])
+    groups = session.query(Group).filter(Group.owner_id==bot.self.puid).all()
+    local_ids = set([g.id for g in groups])
+
+    need_del = local_ids.difference(wx_ids)
+    for group in groups:
+        if group.id in need_del:
+            myself.groups.remove(group)
+            db.session.delete(group)
+
+    for g in wx_groups:
         group = session.query(Group).get(g.puid)
         if not group:
-            group = Group.create(id=g.puid, nick_name=g.nick_name)
+            group = Group.create(id=g.puid, nick_name=g.nick_name,
+                                 owner_id=bot.self.puid)
         local_ids = set([u.id for u in group.members])
         wx_ids = set([u.puid for u in g.members])
         need_add = wx_ids.difference(local_ids)

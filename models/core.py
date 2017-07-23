@@ -99,6 +99,7 @@ class User(CoreMixin, db.Model):
 class Group(CoreMixin, db.Model):
     __tablename__ = 'groups'
     id = db.Column(db.String(20), primary_key=True)  # puid
+    owner_id = db.Column(db.String(20), index=True)
     nick_name = db.Column(db.String(60), index=True)
 
     def __repr__(self):
@@ -115,7 +116,7 @@ class Group(CoreMixin, db.Model):
 
     @hybrid_method
     def del_member(self, user):
-        if not self.is_member(user):
+        if self.is_member(user):
             self.members.remove(user)
 
     @hybrid_property

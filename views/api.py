@@ -51,7 +51,7 @@ json_api = create_app()
 def after_request(response):
     response.headers.add('Access-Control-Allow-Origin', '*')
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     for query in get_debug_queries():
         if query.duration >= config.DATABASE_QUERY_TIMEOUT:
             json_api.logger.warning(
@@ -188,11 +188,12 @@ class GroupsAPI(MethodView):
         q = request.args.get('q', '')
         uid = current_bot.self.puid
         query = db.session.query
+        query = query(Group).filter(Group.owner_id==uid)
         if q:
-            groups = query(Group).filter(Group.nick_name.like('%{}%'.format(q)))
+            groups = query.filter(Group.nick_name.like('%{}%'.format(q)))
             total = groups.count()
         else:
-            groups = query(Group)
+            groups = query
             total = groups.count()
         groups = groups.offset((page-1)*page_size).limit(page_size).all()
         return {

@@ -122,7 +122,9 @@ def kick(msg):
         period = settings.kick_period * 60
         if current == 1:
             r.expire(KICK_KEY, period)
-        return settings.kick_text.format(current=current, member=to_kick.nick_name, total=settings.kick_quorum_n, period=period)
+        return settings.kick_text.format(
+            current=current, member=to_kick.nick_name,
+            total=settings.kick_quorum_n, period=period)
     msg.chat.remove_members([to_kick])
     to_kick.set_remark_name('[黑名单]-' + get_time())
     msg.chat.remove_members([to_kick])
