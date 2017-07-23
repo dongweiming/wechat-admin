@@ -163,7 +163,7 @@ def send_msg(m):
 
         if isinstance(m.sender, _MP):
             for mp_id, ids in settings.mp_forward:
-                if m.sender.id == mp_id:
+                if m.sender.puid == mp_id:
                     groups = map(lambda x: bot.groups().search(puid=x)[0], ids)
                     sync_message_in_groups(m, groups)
                     return
