@@ -203,7 +203,7 @@ class GroupsAPI(MethodView):
 
     def put(self):
         data = request.get_json()
-        ids = data['ids']
+        ids = data['ids'].split(',')
         name = data['name']
         users = [u for u in current_bot.friends() if u.puid in ids]
         current_bot.create_group(users, topic=name)
@@ -241,8 +241,7 @@ def all_users():
     all_ids = set([u.puid for u in sum(
         [g.members for g in current_bot.groups()], [])])
     friend_ids = set([u.puid for u in current_bot.friends()])
-    # ids = all_ids.difference(friend_ids)
-    ids = [u.id for u in db.session.query(User).all()]
+    ids = all_ids.difference(friend_ids)
     users = [u.to_dict() for u in db.session.query(User).filter(
         User.id.in_(ids)).all()]
     return {'users': users}
@@ -265,6 +264,7 @@ def send_message():
     ids = data['ids']
     group_id = data['gid']
     files = data['files']
+    content = data['content']
     if type == 'group':
         send_type = data['send_type']
         groups = current_bot.groups()
@@ -288,11 +288,11 @@ def send_message():
                 user.send_image(file)
             else:
                 user.send_file(file)
-    unexpected = ids.difference(set([u.id for u in users]))
+    unexpected = set(ids).difference(set([u.puid for u in users]))
     if unexpected:
         raise ApiException(
             errors.not_found,
-            '如下puid用户未找到: {}'.format(','.join(unexpected)))
+            '如下puid用户未找到: {}，可能消息发送没成功'.format(','.join(unexpected)))
     return {}
 
 

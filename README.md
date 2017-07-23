@@ -102,7 +102,7 @@ mysql> ^DBye
 启动服务：
 
 ```bash
-❯ venv/bin/gunicorn app:app --bind 0.0.0.0:8100 -w 4 -t 0
+❯ venv/bin/gunicorn app:app --bind 0.0.0.0:8100 -w 6 -t 0
 ```
 
 访问 WEB页面 http://localhost:8100 使用微信扫码登录

@@ -155,9 +155,6 @@
         this.fileList = fileList;
       },
       submit () {
-        this.dialogVisible = false
-        this.originalContent = ''
-        this.content = ''
         let para = {
           type: this.queryType,
           gid: this.gid || '',
@@ -168,8 +165,10 @@
         }
         sendMessage(para).then((res) => {
           this.$checkStatus(res);
-          this.getUsers();
+          this.originalContent = ''
+          this.content = ''
         });
+        this.dialogVisible = false
       },
       querySearch(query, cb) {
         let groups = this.allGroups;
