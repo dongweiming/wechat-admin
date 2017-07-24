@@ -6,12 +6,23 @@ services:
     hostname: localhost
     image: mysql
     environment:
-      MYSQL_ROOT_PASSWORD: ''
+      MYSQL_ROOT_PASSWORD: '123'
       MYSQL_DATABASE: test
+    ports:
+      - "3306:3306"
   web:
     build: .
     ports:
       - "8100:8100"
+    volumes:
+      - .:/web
+    links:
+      - redis
+      - mysql
+    command:
+        python app.py
+  init:
+    build: .
     volumes:
       - .:/web
     links:
@@ -23,7 +34,6 @@ services:
       - |
         export FLASK_APP=manager.py
         flask initdb
-        gunicorn app:app --bind 0.0.0.0:8100 -w 8 -t 0
   celery:
     build: .
     volumes:

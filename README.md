@@ -125,7 +125,7 @@ mysql> ^DBye
 
 ```bash
 ❯ pip install docker-compose
-❯ venv/bin/docker-compose up -d
+❯ venv/bin/docker-compose build
 ❯ venv/bin/docker-compose run web  # 启动Web，地址也是 http://localhost:8100
 ❯ venv/bin/docker-compose run celery  # 同样是在扫码登录之后再启动
 ```
@@ -207,8 +207,12 @@ gunicorn app:app --bind 0.0.0.0:8100 -w 10 -t 0
 或者不用gunicorn， 直接使用Flask的threaded参数启动：
 
 ```bash
+❯ cat app.py
+...
 if __name__ == '__main__':
      app.run(host='0.0.0.0', port=8100, debug=app.debug, threaded=True)
+     
+❯ python app.py
 ```
 
 
