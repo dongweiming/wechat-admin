@@ -1,0 +1,34 @@
+version: "2"
+services:
+  redis:
+    image: redis
+  mysql:
+    hostname: localhost
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ''
+      MYSQL_DATABASE: test
+  web:
+    build: .
+    ports:
+      - "8100:8100"
+    volumes:
+      - .:/web
+    links:
+      - redis
+      - mysql
+    command:
+      - /bin/sh
+      - -c
+      - |
+        export FLASK_APP=manager.py
+        flask initdb
+        gunicorn app:app --bind 0.0.0.0:8100 -w 8 -t 0
+  celery:
+    build: .
+    volumes:
+      - .:/web
+    links:
+      - redis
+      - mysql
+    command: celery -A wechat worker -l info -B
