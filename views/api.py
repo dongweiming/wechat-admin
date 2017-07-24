@@ -262,6 +262,7 @@ def all_groups():
 def send_message():
     data = request.get_json()
     type = data['type']
+    ids = data['ids']
     group_id = data['gid']
     files = data['files']
     content = data['content']
