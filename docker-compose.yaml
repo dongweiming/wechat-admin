@@ -1,44 +1,67 @@
-version: "2"
+version: '2'
+networks:
+  bridge:
+    driver: bridge
 services:
   redis:
     image: redis
+    ports:
+      - 6379:6379
+    networks:
+      - bridge
   mysql:
-    hostname: localhost
     image: mysql
     environment:
-      MYSQL_ROOT_PASSWORD: '123'
+      MYSQL_ROOT_PASSWORD: test123
       MYSQL_DATABASE: test
+      MYSQL_USER: dev
+      MYSQL_PASSWORD: test123
     ports:
-      - "3306:3306"
+      - 3306:3306
+    restart: always
+    networks:
+      - bridge
+    volumes:
+      - ./mysql_data:/var/lib/mysql
   web:
     build: .
     ports:
       - "8100:8100"
     volumes:
       - .:/web
-    links:
+    depends_on:
       - redis
       - mysql
-    command:
-        python app.py
+    command: python app.py
+    networks:
+      - bridge
   init:
     build: .
     volumes:
       - .:/web
-    links:
+    depends_on:
       - redis
       - mysql
+    environment:
+      - FLASK_APP=manager.py
     command:
       - /bin/sh
       - -c
       - |
-        export FLASK_APP=manager.py
+        cp local_settings.py.tmpl local_settings.py
         flask initdb
+    networks:
+      - bridge
   celery:
     build: .
     volumes:
       - .:/web
-    links:
+    depends_on:
       - redis
       - mysql
     command: celery -A wechat worker -l info -B
+    networks:
+      - bridge
+volumes:
+  mysql-data:
+    driver: local

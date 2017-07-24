@@ -202,7 +202,6 @@ class GroupsAPI(MethodView):
         }
 
     def put(self):
-        return {}
         data = request.get_json()
         ids = data['ids'].split(',')
         name = data['name']
