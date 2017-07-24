@@ -262,8 +262,6 @@ def all_groups():
 def send_message():
     data = request.get_json()
     type = data['type']
-    content = data['content']
-    ids = set(data['ids'])
     group_id = data['gid']
     files = data['files']
     content = data['content']
@@ -290,11 +288,7 @@ def send_message():
                 user.send_image(file)
             else:
                 user.send_file(file)
-<<<<<<< HEAD
-    unexpected = ids.difference(set([u.puid for u in users]))
-=======
     unexpected = set(ids).difference(set([u.puid for u in users]))
->>>>>>> upstream/master
     if unexpected:
         raise ApiException(
             errors.not_found,
