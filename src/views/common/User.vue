@@ -60,7 +60,7 @@
 		<el-dialog title="添加好友" v-model="addFormVisible" :close-on-click-modal="false">
 			<el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
         <el-form-item label="用户" prop="wxid">
-				  <el-select v-model="addForm.wxid" multiple filterable remote placeholder="请输入用户昵称" :remote-method="remoteMethod" size="large">
+				  <el-select v-model="addForm.wxid" multiple filterable remote :placeholder="placeholder" :remote-method="remoteMethod" size="large">
             <el-option v-for="item in curOptions" :key="item.value" :label="item.label.split('|')[0]" :value="item.value">
               <img :src="item.label.split('|')[1]" class="small-avatar"/>
               <span class="nick-name">{{ item.label.split('|')[0] }}</span>
@@ -96,6 +96,7 @@
 					query: ''
 				},
 				users: [],
+        placeholder: '等待接口返回',
 				total: 0,
 				page: 1,
         group: '',
@@ -189,6 +190,7 @@
           this.allOptions = res.data.users.map(item => {
             return { value: item.id, label: `${item.nick_name}|${item.avatar}`};
           });
+          this.placeholder = '请输入用户昵称';
         });
 			},
 
@@ -230,8 +232,8 @@
         this.$prompt('群的名字', '提示', {
           confirmButtonText: '创建',
           cancelButtonText: '取消',
-          inputPattern: /\w/,
-          inputErrorMessage: '请输入群聊名字'
+//          inputPattern: /\w+/,
+//          inputErrorMessage: '请输入群聊名字'
         }).then(({ value }) => {
            this.listLoading = true;
            let para = { ids: ids, name: value };

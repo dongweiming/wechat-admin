@@ -26,9 +26,8 @@ from models.core import User, Group, MP  # noqa
 from models.messaging import Message, Notification
 
 stopped.connect(restart_listener)
-MP_FIELD = ['sex', 'nick_name', 'signature', 'province', 'city']
+MP_FIELD = ['nick_name', 'signature', 'province', 'city']
 USER_FIELD = MP_FIELD + ['sex']
-
 bot = get_bot()
 
 
@@ -40,10 +39,23 @@ def _retrieve_data(update=False):
 
 def _update_group(bot, update=False):
     session = db.session
-    for g in bot.groups(update):
+    wx_groups = bot.groups(update)
+    myself = session.query(User).get(bot.self.puid)
+    wx_ids = set([g.puid for g in wx_groups])
+    groups = session.query(Group).filter(Group.owner_id==bot.self.puid).all()
+    local_ids = set([g.id for g in groups])
+
+    need_del = local_ids.difference(wx_ids)
+    for group in groups:
+        if group.id in need_del:
+            myself.groups.remove(group)
+            db.session.delete(group)
+
+    for g in wx_groups:
         group = session.query(Group).get(g.puid)
         if not group:
-            group = Group.create(id=g.puid, nick_name=g.nick_name)
+            group = Group.create(id=g.puid, nick_name=g.nick_name,
+                                 owner_id=bot.self.puid)
         local_ids = set([u.id for u in group.members])
         wx_ids = set([u.puid for u in g.members])
         need_add = wx_ids.difference(local_ids)
@@ -73,20 +85,22 @@ def _update_group(bot, update=False):
 def _update_mp(bot, update=False):
     session = db.session
     myself = session.query(User).get(bot.self.puid)
-    wx_mps = bot.mps()
+    wx_mps = bot.mps(update)
     local_ids = set([m.id for m in myself.mps])
     wx_ids = set([u.puid for u in wx_mps])
     need_add = wx_ids.difference(local_ids)
     if need_add:
         for m in wx_mps:
             if m.puid in need_add:
-                User.create(id=m.puid, **{field: getattr(m, field)
-                                          for field in MP_FIELD})
+                mp = MP.create(id=m.puid, **{field: getattr(m, field)
+                                             for field in MP_FIELD})
                 # wxpy还不支持公众号的头像下载
+                myself.mps.append(mp)
     need_del = local_ids.difference(wx_ids)
     if need_del:
         for mp in myself.mps:
             if mp.id in need_del:
+                myself.mps.remove(mp)
                 db.session.delete(mp)
     session.commit()
 
@@ -94,7 +108,7 @@ def _update_mp(bot, update=False):
 def _update_contact(bot, update=False):
     session = db.session
     myself = session.query(User).get(bot.self.puid)
-    wx_friends = bot.friends()
+    wx_friends = bot.friends(update)
     local_ids = set([u.id for u in myself.friends.all()])
     wx_ids = set([u.puid for u in wx_friends])
     need_add = wx_ids.difference(local_ids)

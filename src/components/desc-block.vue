@@ -17,6 +17,7 @@
     background-color: rgb(249, 250, 252);
     clear: both;
     overflow: hidden;
+    margin-bottom: 10px;
   }
   .wx {
     width: 60%;

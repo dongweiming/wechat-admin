@@ -51,7 +51,7 @@ json_api = create_app()
 def after_request(response):
     response.headers.add('Access-Control-Allow-Origin', '*')
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     for query in get_debug_queries():
         if query.duration >= config.DATABASE_QUERY_TIMEOUT:
             json_api.logger.warning(
@@ -188,11 +188,12 @@ class GroupsAPI(MethodView):
         q = request.args.get('q', '')
         uid = current_bot.self.puid
         query = db.session.query
+        query = query(Group).filter(Group.owner_id==uid)
         if q:
-            groups = query(Group).filter(Group.nick_name.like('%{}%'.format(q)))
+            groups = query.filter(Group.nick_name.like('%{}%'.format(q)))
             total = groups.count()
         else:
-            groups = query(Group)
+            groups = query
             total = groups.count()
         groups = groups.offset((page-1)*page_size).limit(page_size).all()
         return {
@@ -201,8 +202,9 @@ class GroupsAPI(MethodView):
         }
 
     def put(self):
+        return {}
         data = request.get_json()
-        ids = data['ids']
+        ids = data['ids'].split(',')
         name = data['name']
         users = [u for u in current_bot.friends() if u.puid in ids]
         current_bot.create_group(users, topic=name)
@@ -240,8 +242,7 @@ def all_users():
     all_ids = set([u.puid for u in sum(
         [g.members for g in current_bot.groups()], [])])
     friend_ids = set([u.puid for u in current_bot.friends()])
-    # ids = all_ids.difference(friend_ids)
-    ids = [u.id for u in db.session.query(User).all()]
+    ids = all_ids.difference(friend_ids)
     users = [u.to_dict() for u in db.session.query(User).filter(
         User.id.in_(ids)).all()]
     return {'users': users}
@@ -265,6 +266,7 @@ def send_message():
     ids = set(data['ids'])
     group_id = data['gid']
     files = data['files']
+    content = data['content']
     if type == 'group':
         send_type = data['send_type']
         groups = current_bot.groups()
@@ -288,11 +290,15 @@ def send_message():
                 user.send_image(file)
             else:
                 user.send_file(file)
+<<<<<<< HEAD
     unexpected = ids.difference(set([u.puid for u in users]))
+=======
+    unexpected = set(ids).difference(set([u.puid for u in users]))
+>>>>>>> upstream/master
     if unexpected:
         raise ApiException(
             errors.not_found,
-            '如下puid用户未找到: {}'.format(','.join(unexpected)))
+            '如下puid用户未找到: {}，可能消息发送没成功'.format(','.join(unexpected)))
     return {}
 
 

@@ -2,25 +2,30 @@
 import os
 import re
 import sys
+from datetime import datetime, timedelta
 
-from wxpy import Friend, Group, Chat, MP as _MP
+from wxpy import Friend, Group, Chat, MP as _MP, sync_message_in_groups
 from wxpy.api import consts
 
 from config import PLUGIN_PATHS, PLUGINS, GROUP_MEMBERS_LIMIT
 from libs.consts import *
 from libs.globals import current_bot as bot
-from models.admin import GroupSettings
+from models.setting import GroupSettings
+from models.redis import db as r
 from models.messaging import Message, Notification, db
 
 uid = bot.self.puid
 settings = GroupSettings.get(uid)
 pattern_map = {p: tmpl for p, tmpl in settings.group_patterns}
 new_member_regex = re.compile(r'^"(.+)"通过|邀请"(.+)"加入')
+kick_member_regex = re.compile(r'^(移出|移除|踢出|T)(\s*)@(.+?)(?:\u2005?\s*$)')
 all_types = [k.capitalize() for k in dir(consts) if k.isupper() and k != 'SYSTEM']
 here = os.path.abspath(os.path.dirname(__file__))
 UPLOAD_PATH = os.path.join(here, '../static/img/uploads')
 if not os.path.exists(UPLOAD_PATH):
     os.mkdir(UPLOAD_PATH)
+KICK_KEY = 'kick:members'
+KICK_SENDER_KEY = 'kick:senders'
 
 groups = [g for g in bot.groups() if g.owner.puid == uid]
 
@@ -36,6 +41,10 @@ def get_creators():
         creators = map(lambda x: bot.friends().search(
             u['nick_name'], Sex=u['sex'], Signature=u['signature'])[0], users)
     return list(creators)
+
+
+def get_time():
+    return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 
 def invite(user, pattern):
@@ -90,6 +99,38 @@ def welcome(msg):
             return settings.welcome_text.format(text[0])
 
 
+@bot.register(groups, TEXT, except_self=False)
+def kick(msg):
+    match = kick_member_regex.search(msg.text)
+    if not match:
+        return
+
+    name = match.group(3)
+    to_kick = msg.chat.members.search(name=name, nick_name=name)
+    if not to_kick:
+        return '没找到对应用户，请联系群主😯'
+    to_kick = to_kick[0]
+    receiver_id = to_kick.puid
+    if receiver_id == uid:
+        return '群主不能被移出哦😯'
+    rs = r.sadd(KICK_SENDER_KEY, msg.member.puid)
+    if not rs:
+        return
+    current = r.hincrby(KICK_KEY, receiver_id, 1)
+
+    if current < settings.kick_quorum_n:
+        period = settings.kick_period * 60
+        if current == 1:
+            r.expire(KICK_KEY, period)
+        return settings.kick_text.format(
+            current=current, member=to_kick.nick_name,
+            total=settings.kick_quorum_n, period=period)
+    msg.chat.remove_members([to_kick])
+    to_kick.set_remark_name('[黑名单]-' + get_time())
+    msg.chat.remove_members([to_kick])
+    return '成功移出 @{}'.format(to_kick.nick_name)
+
+
 @bot.register(msg_types=all_types, except_self=False)
 def send_msg(m):
     # wxpy还不支持未命名的群聊消息
@@ -119,6 +160,13 @@ def send_msg(m):
             msg.file_ext = ext
             db.session.commit()
         Notification.add(receiver_id, msg.id)
+
+        if isinstance(m.sender, _MP):
+            for mp_id, ids in settings.mp_forward:
+                if m.sender.puid == mp_id:
+                    groups = map(lambda x: bot.groups().search(puid=x)[0], ids)
+                    sync_message_in_groups(m, groups)
+                    return
 
 
 _sys_path = sys.path[:]
@@ -160,11 +208,14 @@ for p in PLUGINS:
         patterns = '|'.join(ex_patterns)
         if re.search(r'{}'.format(patterns), text):
             return
+
         from views.api import json_api as app
         with app.app_context():
             app.plugin_modules = _cached
             app.nick_name = bot.self.nick_name
-            msg.sender.send(plugin.main(msg))
+            result = plugin.main(msg)
+            if result:
+                msg.sender.send(result)
 
     exec('def {}(msg):\n    return func(msg)'.format(name),
          {'func': func}, _namespace)

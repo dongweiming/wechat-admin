@@ -6,8 +6,8 @@ from flask.blueprints import Blueprint
 from ext import db
 import views.errors as errors
 from views.exceptions import ApiException
-from models.core import User, Group, friendship, group_relationship
-from models.admin import GroupSettings
+from models.core import User, Group, MP, friendship, group_relationship
+from models.setting import GroupSettings
 from libs.globals import current_bot
 
 bp = Blueprint('settings', __name__, url_prefix='/settings')
@@ -18,13 +18,12 @@ class GroupAPI(MethodView):
         uid = current_bot.self.puid
         query = db.session.query
         user = query(User).get(uid)
-        users = user.friends
-        total = users.count()
-        users = users.all()
 
         data = {
-            'total': total,
-            'users': [user.to_dict() for user in users]
+            'users': [user.to_dict() for user in user.friends],
+            'groups': [group.to_dict() for group in user.groups],
+            'mps': [mp.to_dict() for mp in user.mps]
+
         }
         settings = GroupSettings.get(uid)
         data.update(settings.to_dict())
@@ -34,10 +33,15 @@ class GroupAPI(MethodView):
         data = request.get_json()
         data['id'] = current_bot.self.puid
         creators = data.pop('creators', [])
+        mp_forward = data.pop('mp_forward', [])
         obj = GroupSettings.create(**data)
         if creators:
             obj.creators.clear()
             obj.creators.extend(creators)
+            obj.save()
+        if mp_forward:
+            obj.mp_forward.clear()
+            obj.mp_forward.extend(mp_forward)
             obj.save()
         return {}
 

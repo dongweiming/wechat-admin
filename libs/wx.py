@@ -36,9 +36,6 @@ def get_bot():
     return bot
 
 
-from models.core import User, Group, MP  # noqa
-
-
 def gen_avatar_path(puid, force=False):
     need_update = True
     avatar_url = avatar_tmpl.format(puid)
