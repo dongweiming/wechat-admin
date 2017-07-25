@@ -16,6 +16,16 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-ff69b4.svg)](https://github.com/dongweiming/wechat-admin/issues)
 
+# Preview
+
+![效果图](https://github.com/dongweiming/wechat-admin/blob/master/screenshots/wechat_admin.png)
+
+<a href="https://vimeo.com/226854345" target="_blank"><img src="https://github.com/dongweiming/wechat-admin/blob/master/screenshots/web.png"
+alt="Web效果" width="400" border="10" /></a>
+<a href="https://vimeo.com/226858058" target="_blank"><img src="https://github.com/dongweiming/wechat-admin/blob/master/screenshots/ios.png"
+alt="IOS效果" width="240" border="10" /></a>
+
+
 ## 特性
 
 * 支持显示好友列表，可过滤
@@ -131,8 +141,8 @@ PS: 如果是本地运行，可以不使用gunicorn，直接使用Flask的多线
 ```bash
 ❯ pip install docker-compose
 ❯ venv/bin/docker-compose build
-❯ venv/bin/docker-compose run --service-ports web  # 启动Web，地址也是 http://localhost:8100
-❯ venv/bin/docker-compose run celery  # 同样是在扫码登录之后再启动
+❯ venv/bin/docker-compose run --service-ports -d web  # 启动Web，地址也是 http://localhost:8100
+❯ venv/bin/docker-compose run -d celery  # 同样是在扫码登录之后再启动
 ```
 
 ## 本地开发
