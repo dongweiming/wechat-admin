@@ -24,7 +24,7 @@
 <a href="https://vimeo.com/226858058" target="_blank"><img src="https://github.com/dongweiming/wechat-admin/blob/master/screenshots/ios.png" alt="IOS效果" width="240" border="10" /></a>
 
 ### 欢迎扫码体验：
-<a href="https://vimeo.com/226854345" target="_blank"><img src="https://github.com/dongweiming/wechat-admin/blob/master/screenshots/chat.png" alt="扫码加群" width="640" border="10" /></a> 
+<img src="https://github.com/dongweiming/wechat-admin/blob/master/screenshots/chat.png" alt="扫码加群" width="640" border="10" />
 
 ## 特性
 
@@ -141,6 +141,7 @@ PS: 如果是本地运行，可以不使用gunicorn，直接使用Flask的多线
 ```bash
 ❯ pip install docker-compose
 ❯ venv/bin/docker-compose build
+❯ venv/bin/docker-compose run init  # 只有在第一次才需要执行这步
 ❯ venv/bin/docker-compose run --service-ports -d web  # 启动Web，地址也是 http://localhost:8100
 ❯ venv/bin/docker-compose run -d celery  # 同样是在扫码登录之后再启动
 ```
