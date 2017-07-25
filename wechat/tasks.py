@@ -99,6 +99,9 @@ def _update_mp(bot, update=False):
     need_add = wx_ids.difference(local_ids)
     if need_add:
         for m in wx_mps:
+            # see https://github.com/dongweiming/wechat-admin/issues/14
+            if m.puid is None:
+                continue
             if m.puid in need_add:
                 mp = MP.create(id=m.puid, **{field: getattr(m, field)
                                              for field in MP_FIELD})
