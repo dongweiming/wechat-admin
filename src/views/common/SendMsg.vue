@@ -100,7 +100,6 @@
 		data() {
       return {
         API_URL: API_URL,
-        originalContent: '',
         content: '',
         showEmoji: false,
         dialogVisible: false,
@@ -108,6 +107,7 @@
         fileList: [],
         sendType: false,
         gid: '',
+        emojiList: [],
         curOptions: [],
         group: '',
         groups: [],
@@ -139,10 +139,9 @@
           });
       },
       selectEmoji (code) {
-        let emoji = code.slice(1, -1);
+        this.emojiList.push(code);
         this.showEmoji = false
         this.content += code
-        this.originalContent += `[${ emoji.replace(/\b\w/g, l => l.toUpperCase()) }]`;
       },
       handleSelectGroup(item) {
         this.gid = item.key;
@@ -155,18 +154,22 @@
         this.fileList = fileList;
       },
       submit () {
+        let content = this.content
+        this.emojiList.forEach((code, index) => {
+          content = content.replace(code, `[${ code.slice(1, -1).replace(/\b\w/g, l => l.toUpperCase()) }]`);
+        });
         let para = {
           type: this.queryType,
           gid: this.gid || '',
-          content: this.originalContent,
+          content: this.content,
           ids: this.ids,
           send_type: this.sendType ? 'group': 'contact',
           files: this.fileList.map(item => item.name)
         }
         sendMessage(para).then((res) => {
           this.$checkStatus(res);
-          this.originalContent = ''
           this.content = ''
+          this.fileList = []
         });
         this.dialogVisible = false
       },
