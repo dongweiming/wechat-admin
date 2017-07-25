@@ -63,10 +63,10 @@ def export():  # 需要包含export函数，返回插件类即可
 
 ### 插件列表
 
-| 插件名 | 描述 | 
-| ------| ------ |
-| Simsimi | 小黄鸡哟哟 |
-| Help | 帮助插件，根据所有插件的description属性的内容生成 |
-| Tuling | @群主即可开聊 |
-| Chatter | 基于机器学习的ChatterBot 和群主私聊 |
+| 插件名 | 描述 | 注意事项 |
+| ------| ------ | ---- |
+| Simsimi | 小黄鸡哟哟 ||
+| Help | 帮助插件，根据所有插件的description属性的内容生成 ||
+| Tuling | @群主即可开聊 ||
+| Chatter | 基于机器学习的ChatterBot 和群主私聊 |需要手动安装 pip install chatterbot |
 

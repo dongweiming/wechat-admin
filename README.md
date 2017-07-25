@@ -140,6 +140,7 @@ PS: 如果是本地运行，可以不使用gunicorn，直接使用Flask的多线
 
 ```bash
 ❯ pip install docker-compose
+❯ git clone --recursive https://github.com/dongweiming/wechat-plugins
 ❯ venv/bin/docker-compose build
 ❯ venv/bin/docker-compose run init  # 只有在第一次才需要执行这步
 ❯ venv/bin/docker-compose run --service-ports -d web  # 启动Web，地址也是 http://localhost:8100
