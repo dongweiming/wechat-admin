@@ -108,8 +108,13 @@ mysql> ^DBye
 ❯ venv/bin/gunicorn app:app --bind 0.0.0.0:8100 -w 6 -t 0
 ```
 
-访问 WEB页面 http://localhost:8100 使用微信扫码登录
+PS: 如果是本地运行，可以不使用gunicorn，直接使用Flask的多线程调试模式：
 
+```bash
+❯ python app.py
+```
+
+访问 WEB页面 http://localhost:8100 使用微信扫码登录
 
 登录成功后，启动Celery Beat和Worker：
 
@@ -126,7 +131,7 @@ mysql> ^DBye
 ```bash
 ❯ pip install docker-compose
 ❯ venv/bin/docker-compose build
-❯ venv/bin/docker-compose run web  # 启动Web，地址也是 http://localhost:8100
+❯ venv/bin/docker-compose run --service-ports web  # 启动Web，地址也是 http://localhost:8100
 ❯ venv/bin/docker-compose run celery  # 同样是在扫码登录之后再启动
 ```
 
@@ -196,9 +201,9 @@ Issue: [#9](https://github.com/dongweiming/wechat-admin/issues/9)
 
 这是一个小型项目，我没有添加Nginx支持，直接使用了Gunicorn。在用Gunicorn的时候使用了`-t 0`也就是不超时。
 
-这样用的原因是项目中的sse需要一个长连接，而且从用户打开登录页面到扫码完成这个时间不好控制，就索性不超时了。事实上应该把/stream拿出来特殊处理，其他的路由需要有超时时间设置的（这块，我会择机重构一下）。
+这样用的原因是项目中的sse需要一个长连接，而且从用户打开登录页面到扫码完成这个时间不好控制，就索性不超时了，但是也造成了未响应的请求不能及时释放。事实上应该把/stream拿出来特殊处理，其他的路由需要有超时时间设置的（这块，我会择机重构一下）。
 
-现在的解决办法是指定更多的Worker数量：
+现在的解决办法是指定更多的Worker数量，以及经常的重启gunicorn(使用supervisor管理会更方便）：
 
 ```bash
 gunicorn app:app --bind 0.0.0.0:8100 -w 10 -t 0
