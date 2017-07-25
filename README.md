@@ -136,7 +136,7 @@ PS: 如果是本地运行，可以不使用gunicorn，直接使用Flask的多线
 
 ### 使用Docker
 
-假设已经按照了Docker，执行如下命令即可。
+假设已经安装了Docker，执行如下命令即可。
 
 ```bash
 ❯ pip install docker-compose
