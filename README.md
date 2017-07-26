@@ -270,10 +270,6 @@ stopped.connect(restart_listener)
 
 解密手机微信API，把这些未开放的API的集成进来不太好，还可能引起法律方面的问题。
 
-### EOFError: Ran out of input
-
-我并没有细研究，最简单的办法是把2个*.pkl文件删掉，重新更新一次就好了。
-
 ## 感谢
 
 * [vue-admin](https://github.com/taylorchen709/vue-admin)
