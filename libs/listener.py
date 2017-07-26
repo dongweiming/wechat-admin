@@ -2,25 +2,40 @@
 import os
 import re
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime
 
-from wxpy import Friend, Group, Chat, MP as _MP, sync_message_in_groups
+from wxpy import Friend, Group, MP as _MP, sync_message_in_groups
 from wxpy.api import consts
 
 from config import PLUGIN_PATHS, PLUGINS, GROUP_MEMBERS_LIMIT
-from libs.consts import *
+from libs.consts import *  # noqa
 from libs.globals import current_bot as bot
 from models.setting import GroupSettings
 from models.redis import db as r
 from models.core import User
 from models.messaging import Message, Notification, db
 
+
+class SettingWrapper:
+
+    def __init__(self, uid):
+        self.uid = uid
+
+    def __getattr__(self, item):
+        settings = GroupSettings.get(self.uid)
+        return getattr(settings, item, None)
+
+    @property
+    def pattern_map(self):
+        return {p: tmpl for p, tmpl in settings.group_patterns}
+
+
 uid = bot.self.puid
-settings = GroupSettings.get(uid)
-pattern_map = {p: tmpl for p, tmpl in settings.group_patterns}
+settings = SettingWrapper(uid)
 new_member_regex = re.compile(r'^"(.+)"通过|邀请"(.+)"加入')
 kick_member_regex = re.compile(r'^(移出|移除|踢出|T)(\s*)@(.+?)(?:\u2005?\s*$)')
-all_types = [k.capitalize() for k in dir(consts) if k.isupper() and k != 'SYSTEM']
+all_types = [k.capitalize()
+             for k in dir(consts) if k.isupper() and k != 'SYSTEM']
 here = os.path.abspath(os.path.dirname(__file__))
 UPLOAD_PATH = os.path.join(here, '../static/img/uploads')
 if not os.path.exists(UPLOAD_PATH):
@@ -35,7 +50,7 @@ def get_creators():
     creator_ids = settings.creators
     try:
         creators = list(map(lambda x: bot.friends().search(puid=x)[0],
-                       creator_ids))
+                            creator_ids))
     except IndexError:
         from views.api import json_api
         with json_api.app_context():
@@ -43,7 +58,7 @@ def get_creators():
                 User.id.in_(creator_ids)).all()]
             creators = list(map(lambda u: bot.friends().search(
                 u['nick_name'], Sex=u['sex'], Signature=u['signature'])[0],
-                                users))
+                users))
     return creators
 
 
@@ -65,13 +80,13 @@ def invite(user, pattern):
                 group.add_members(user, use_invitation=True)
             return
         else:
-            next_topic = pattern_map[pattern].format(
+            next_topic = settings.pattern_map[pattern].format(
                 re.search(r'\d+', s).group() + 1)
             new_group = bot.create_group(get_creators(), topic=next_topic)
             new_group.add_members(user, use_invitation=True)
             group.send_msg('创建 [{}] 成功'.format(next_topic))
     else:
-        next_topic = pattern_map[pattern].format(1)
+        next_topic = settings.pattern_map[pattern].format(1)
         new_group = bot.create_group(get_creators(), topic=next_topic)
         new_group.add_members(user, use_invitation=True)
         group.send_msg('创建 [{}] 成功'.format(next_topic))
@@ -80,7 +95,8 @@ def invite(user, pattern):
 @bot.register(msg_types=FRIENDS)
 def new_friends(msg):
     user = msg.card.accept()
-    pattern = next((p for p in pattern_map if p in msg.text.lower()), None)
+    pattern = next(
+        (p for p in settings.pattern_map if p in msg.text.lower()), None)
     if pattern is not None:
         invite(user, pattern)
     else:
@@ -91,7 +107,8 @@ def new_friends(msg):
 def exist_friends(msg):
     if msg.sender.name.find('黑名单') != -1:
         return '拉黑了，放弃吧 ╮（﹀＿﹀）╭'
-    pattern = next((p for p in pattern_map if p in msg.text.lower()), None)
+    pattern = next(
+        (p for p in settings.pattern_map if p in msg.text.lower()), None)
     if pattern is not None:
         invite(msg.sender, pattern)
 
@@ -100,7 +117,7 @@ def exist_friends(msg):
 def welcome(msg):
     match = new_member_regex.search(msg.text)
     if match:
-        text = list(filter(lambda x:x, match.groups()))
+        text = list(filter(lambda x: x, match.groups()))
         if text:
             return settings.welcome_text.format(text[0])
 
@@ -210,7 +227,8 @@ for p in PLUGINS:
                 return
         ex_patterns = getattr(plugin, 'exclude_patterns', None) or []
         ex_patterns = set(_patterns + ex_patterns +
-                          list(pattern_map.keys())).difference(patterns)
+                          list(settings.pattern_map.keys())).difference(
+                              patterns)
         patterns = '|'.join(ex_patterns)
         if re.search(r'{}'.format(patterns), text):
             return
@@ -229,6 +247,6 @@ for p in PLUGINS:
                  run_async=getattr(plugin, 'run_async', True),
                  chats=getattr(plugin, 'chats', None),
                  except_self=getattr(plugin, 'except_self', None)
-    )(_namespace[name])
+                 )(_namespace[name])
 
 sys.path = _sys_path
