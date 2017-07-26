@@ -4,9 +4,7 @@ from flask.views import MethodView
 from flask.blueprints import Blueprint
 
 from ext import db
-import views.errors as errors
-from views.exceptions import ApiException
-from models.core import User, Group, MP, friendship, group_relationship
+from models.core import User
 from models.setting import GroupSettings
 from libs.globals import current_bot
 
@@ -14,13 +12,14 @@ bp = Blueprint('settings', __name__, url_prefix='/settings')
 
 
 class GroupAPI(MethodView):
+
     def get(self):
         uid = current_bot.self.puid
         query = db.session.query
         user = query(User).get(uid)
 
         data = {
-            'users': [user.to_dict() for user in user.friends],
+            'users': [u.to_dict() for u in user.friends],
             'groups': [group.to_dict() for group in user.groups],
             'mps': [mp.to_dict() for mp in user.mps]
 

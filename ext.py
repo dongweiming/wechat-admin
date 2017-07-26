@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask_sse import sse
+from flask_sse import sse  # noqa
 from sqlalchemy import Column, DateTime
 from flask_sqlalchemy import SQLAlchemy, Model
 

@@ -6,6 +6,7 @@ from wechat.celery import app
 from wxpy.exceptions import ResponseError
 from itchat.signals import logged_out
 
+
 def restart_listener(sender, **kw):
     task_id = r.get(LISTENER_TASK_KEY)
     if task_id:
@@ -23,7 +24,7 @@ from models.redis import db as r, LISTENER_TASK_KEY
 from app import app as sse_api
 from ext import db, sse
 from models.core import User, Group, MP  # noqa
-from models.messaging import Message, Notification
+from models.messaging import Notification
 
 stopped.connect(restart_listener)
 MP_FIELD = ['nick_name', 'signature', 'province', 'city']
@@ -50,7 +51,7 @@ def _update_group(bot, update=False):
     wx_groups = bot.groups(update)
     myself = _get_self(bot)
     wx_ids = set([g.puid for g in wx_groups])
-    groups = session.query(Group).filter(Group.owner_id==bot.self.puid).all()
+    groups = session.query(Group).filter(Group.owner_id == bot.self.puid).all()
     local_ids = set([g.id for g in groups])
 
     need_del = local_ids.difference(wx_ids)

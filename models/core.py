@@ -16,20 +16,21 @@ group_relationship = db.Table(
     'group_relationship',
     db.Column('group_id', db.String(20), db.ForeignKey('groups.id'),
               nullable=False),
-    db.Column('user_id',db.String(20), db.ForeignKey('users.id'),
+    db.Column('user_id', db.String(20), db.ForeignKey('users.id'),
               nullable=False)
 )
 
 mp_relationship = db.Table(
-     'mp_relationship',
-     db.Column('mp_id', db.String(20), db.ForeignKey('mps.id'),
-               nullable=False),
-     db.Column('user_id',db.String(20), db.ForeignKey('users.id'),
-               nullable=False)
- )
+    'mp_relationship',
+    db.Column('mp_id', db.String(20), db.ForeignKey('mps.id'),
+              nullable=False),
+    db.Column('user_id', db.String(20), db.ForeignKey('users.id'),
+              nullable=False)
+)
 
 
 class CoreMixin(BaseMixin):
+
     @property
     def avatar(self):
         return avatar_tmpl.format(self.id)
@@ -48,16 +49,16 @@ class User(CoreMixin, db.Model):
     signature = db.Column(db.String(512), default='')
     province = db.Column(db.String(20), default='')
     city = db.Column(db.String(20), default='')
-    groups =db.relationship('Group', secondary=group_relationship,
-                            backref='members')
-    mps =db.relationship('MP', secondary=mp_relationship,
-                             backref='users')
+    groups = db.relationship('Group', secondary=group_relationship,
+                             backref='members')
+    mps = db.relationship('MP', secondary=mp_relationship,
+                          backref='users')
     friends = db.relationship('User',
-        secondary = friendship,
-        primaryjoin = (friendship.c.user_id == id),
-        secondaryjoin = (friendship.c.friend_id == id),
-        lazy = 'dynamic'
-    )
+                              secondary=friendship,
+                              primaryjoin=(friendship.c.user_id == id),
+                              secondaryjoin = (friendship.c.friend_id == id),
+                              lazy = 'dynamic'
+                              )
 
     def __repr__(self):
         return '<User %r>' % self.nick_name
@@ -107,7 +108,7 @@ class Group(CoreMixin, db.Model):
 
     @hybrid_method
     def is_member(self, user):
-         return user in self.members
+        return user in self.members
 
     @hybrid_method
     def add_member(self, user):
@@ -124,9 +125,9 @@ class Group(CoreMixin, db.Model):
         return len(self.members)
 
     def to_dict(self):
-         rs = super().to_dict()
-         rs['count'] = self.count
-         return rs
+        rs = super().to_dict()
+        rs['count'] = self.count
+        return rs
 
 
 class MP(CoreMixin, db.Model):

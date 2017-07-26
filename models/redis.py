@@ -29,6 +29,6 @@ class RBase(Model):
     @classmethod
     def get(cls, id):
         try:
-            return super().get(cls.id==id)
+            return super().get(cls.id == id)
         except ValueError:
             return cls.create(id=id)

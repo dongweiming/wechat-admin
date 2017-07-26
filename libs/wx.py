@@ -4,33 +4,33 @@
 import os
 from datetime import datetime, timedelta
 
-from itchat.signals import scan_qr_code, confirm_login, logged_in, logged_out
+from itchat.signals import scan_qr_code, confirm_login, logged_out
 
-from ext import db, sse
+from ext import sse
 from config import avatar_tmpl
 
 here = os.path.abspath(os.path.dirname(__file__))
 
 
 def publish(uuid, **kw):
-     from app import app
-     with app.app_context():
-         params = {'uuid': uuid, 'extra': kw.pop('extra', None),
-                   'type': kw.pop('type', None)}
-         params.update(kw)
-         sse.publish(params, type='login')
+    from app import app
+    with app.app_context():
+        params = {'uuid': uuid, 'extra': kw.pop('extra', None),
+                  'type': kw.pop('type', None)}
+        params.update(kw)
+        sse.publish(params, type='login')
 
 
 scan_qr_code.connect(publish)
 confirm_login.connect(publish)
 logged_out.connect(publish)
 
-from wxpy import * # noqa
+from wxpy import *  # noqa
 
 
 def get_bot():
     bot = Bot('bot.pkl', qr_path=os.path.join(
-         here, '../static/img/qr_code.png'), console_qr=None)
+        here, '../static/img/qr_code.png'), console_qr=None)
     bot.enable_puid()
     bot.messages.max_history = 0
     return bot

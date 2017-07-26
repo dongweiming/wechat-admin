@@ -1,4 +1,4 @@
-from wxpy.api.consts import *
+from wxpy.api.consts import *  # noqa
 
 MP = 'MP'
 

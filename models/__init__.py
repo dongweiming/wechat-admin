@@ -1,2 +1,2 @@
-from .core import User, Group
-from .messaging import Log, Message
+from .core import User, Group  # noqa
+from .messaging import Log, Message  # noqa

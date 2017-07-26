@@ -9,6 +9,7 @@ from config import UPLOAD_FOLDER
 
 bp = Blueprint('home', __name__)
 CH_REGEX = re.compile(r'[\u4e00-\u9fff]+')
+ALLOWED_EXTENSIONS = frozenset(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
 
 @bp.route('/')

@@ -20,7 +20,7 @@ def create_app():
     app.add_url_rule('/uploads/<filename>', 'uploaded_file',
                      build_only=True)
     app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {
-        '/uploads':  app.config['UPLOAD_FOLDER']
+        '/uploads': app.config['UPLOAD_FOLDER']
     })
     return app
 
@@ -28,11 +28,16 @@ def create_app():
 app = create_app()
 
 # For local test
+
+
 @app.after_request
 def after_request(response):
     response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add(
+        'Access-Control-Allow-Headers', 'Content-Type,Authorization')
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
     return response
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8100, debug=app.debug, threaded=True)

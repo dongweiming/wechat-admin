@@ -15,5 +15,3 @@ def initdb():
     db.drop_all()
     db.create_all()
     click.echo('Init Finished!')
-
-
