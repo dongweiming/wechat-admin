@@ -35,7 +35,7 @@ invite_text = '''欢迎您！
 kick_text = '''
 正在投票移出 @{member}
 
-当前 {current} / {total} 票 ({period} 分钟有效)
+当前 {current} / {total} 票 ({period} 秒有效)
 
 移出成员会造成其不能再进去本群，请勿滥用投票功能！🤔🤔🤔
 '''

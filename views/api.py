@@ -106,6 +106,12 @@ class UsersAPI(MethodView):
         query = db.session.query
         if type == 'contact':
             user = query(User).get(uid)
+            if user is None:
+                return {
+                    'total': 0,
+                    'group': '',
+                    'users': []
+                }
             if q:
                 users = query(User).outerjoin(
                     friendship, friendship.c.user_id==User.id).filter(and_(
@@ -206,7 +212,8 @@ class GroupsAPI(MethodView):
         ids = data['ids'].split(',')
         name = data['name']
         users = [u for u in current_bot.friends() if u.puid in ids]
-        current_bot.create_group(users, topic=name)
+        group = current_bot.create_group(users, topic=name)
+        group.send_msg('创建成功')
         return {}
 
 

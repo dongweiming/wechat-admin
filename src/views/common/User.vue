@@ -51,7 +51,7 @@
 		<el-col :span="24" class="toolbar">
 			<el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
       <el-button type="info" @click="sendMsg" :disabled="this.sels.length===0">发送消息</el-button>
-      <el-button type="warning" @click="createGroup" :disabled="this.sels.length<=2">创建新群</el-button>
+      <el-button type="warning" @click="createGroup" :disabled="this.sels.length<2">创建新群</el-button>
 			<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="20" :total="total" style="float:right;">
 			</el-pagination>
 		</el-col>
@@ -229,6 +229,9 @@
 
       createGroup () {
         var ids = this.sels.map(item => item.id).toString();
+        if (~ids.indexOf(this.users[0].id)) {
+          this.$message.error('创建群的时候不能包含你自己');
+        }
         this.$prompt('群的名字', '提示', {
           confirmButtonText: '创建',
           cancelButtonText: '取消',
@@ -241,6 +244,10 @@
              this.listLoading = false;
              this.$checkStatus(res);
              this.getUsers();
+             this.$message({
+               message: '创建成功，请强制刷新群聊数据',
+               type: 'success'
+             });
            });
          });
       },

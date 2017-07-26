@@ -33,14 +33,14 @@ groups = [g for g in bot.groups() if g.owner.puid == uid]
 def get_creators():
     creator_ids = settings.creators
     try:
-        creators = map(lambda x: bot.friends().search(puid=x)[0],
-                       creator_ids)
+        creators = list(map(lambda x: bot.friends().search(puid=x)[0],
+                       creator_ids))
     except IndexError:
         users = [u.to_dict() for u in db.session.query(User).filter(
             User.id.in_(creator_ids)).all()]
-        creators = map(lambda x: bot.friends().search(
-            u['nick_name'], Sex=u['sex'], Signature=u['signature'])[0], users)
-    return list(creators)
+        creators = list(map(lambda x: bot.friends().search(
+            u['nick_name'], Sex=u['sex'], Signature=u['signature'])[0], users))
+    return creators
 
 
 def get_time():

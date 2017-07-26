@@ -156,7 +156,8 @@
       submit () {
         let content = this.content
         this.emojiList.forEach((code, index) => {
-          content = content.replace(code, `[${ code.slice(1, -1).replace(/\b\w/g, l => l.toUpperCase()) }]`);
+          content = content.replace(code, `[${ code.slice(1, -1).replace(/\b\w/g, l => l.toUpperCase())
+            }]`);
         });
         let para = {
           type: this.queryType,
