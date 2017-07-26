@@ -27,6 +27,8 @@ class GroupAPI(MethodView):
         }
         settings = GroupSettings.get(uid)
         data.update(settings.to_dict())
+        data['creators'] = list(set(u['id'] for u in data['users']) &
+                                set(str(u, 'u8') for u in data['creators']))
         return data
 
     def put(self):

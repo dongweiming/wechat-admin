@@ -12,6 +12,7 @@ from libs.consts import *
 from libs.globals import current_bot as bot
 from models.setting import GroupSettings
 from models.redis import db as r
+from models.core import User
 from models.messaging import Message, Notification, db
 
 uid = bot.self.puid
@@ -36,10 +37,13 @@ def get_creators():
         creators = list(map(lambda x: bot.friends().search(puid=x)[0],
                        creator_ids))
     except IndexError:
-        users = [u.to_dict() for u in db.session.query(User).filter(
-            User.id.in_(creator_ids)).all()]
-        creators = list(map(lambda x: bot.friends().search(
-            u['nick_name'], Sex=u['sex'], Signature=u['signature'])[0], users))
+        from views.api import json_api
+        with json_api.app_context():
+            users = [u.to_dict() for u in db.session.query(User).filter(
+                User.id.in_(creator_ids)).all()]
+            creators = list(map(lambda u: bot.friends().search(
+                u['nick_name'], Sex=u['sex'], Signature=u['signature'])[0],
+                                users))
     return creators
 
 
@@ -65,10 +69,12 @@ def invite(user, pattern):
                 re.search(r'\d+', s).group() + 1)
             new_group = bot.create_group(get_creators(), topic=next_topic)
             new_group.add_members(user, use_invitation=True)
+            group.send_msg('创建 [{}] 成功'.format(next_topic))
     else:
         next_topic = pattern_map[pattern].format(1)
         new_group = bot.create_group(get_creators(), topic=next_topic)
         new_group.add_members(user, use_invitation=True)
+        group.send_msg('创建 [{}] 成功'.format(next_topic))
 
 
 @bot.register(msg_types=FRIENDS)
