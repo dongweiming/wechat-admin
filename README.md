@@ -11,7 +11,7 @@
 ![es2015](https://img.shields.io/badge/ECMAScript-6-green.svg)
 ![celery](https://img.shields.io/badge/celery-4.0.2-4BC51D.svg)
 ![element ui](https://img.shields.io/badge/element-1.3.6-20a0ff.svg)
-![pypi](https://img.shields.io/pypi/v/nine.svg)
+![travis](https://img.shields.io/travis/dongweiming/wechat-admin.svg)
 ![ver](https://img.shields.io/badge/release-v0.1-red.svg)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-ff69b4.svg)](https://github.com/dongweiming/wechat-admin/issues)
