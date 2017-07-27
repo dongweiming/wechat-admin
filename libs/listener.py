@@ -43,7 +43,7 @@ if not os.path.exists(UPLOAD_PATH):
 KICK_KEY = 'kick:members'
 KICK_SENDER_KEY = 'kick:senders'
 
-groups = [g for g in bot.groups() if g.owner.puid == uid]
+groups = [g for g in bot.groups() if g.is_owner]
 
 
 def get_creators():
@@ -144,13 +144,13 @@ def kick(msg):
     if current < settings.kick_quorum_n:
         period = settings.kick_period * 60
         if current == 1:
-            r.expire(KICK_KEY, period)
+            for key in (KICK_SENDER_KEY, KICK_KEY):
+                r.expire(key, period)
         return settings.kick_text.format(
             current=current, member=to_kick.nick_name,
             total=settings.kick_quorum_n, period=period)
     msg.chat.remove_members([to_kick])
     to_kick.set_remark_name('[黑名单]-' + get_time())
-    msg.chat.remove_members([to_kick])
     return '成功移出 @{}'.format(to_kick.nick_name)
 
 
