@@ -20,8 +20,7 @@
 
 ![效果图](https://github.com/dongweiming/wechat-admin/blob/master/screenshots/wechat_admin.png)
 
-<a href="https://vimeo.com/226854345" target="_blank"><img src="https://github.com/dongweiming/wechat-admin/blob/master/screenshots/web.png" alt="Web效果" width="400" border="10" /></a>
-<a href="https://vimeo.com/226858058" target="_blank"><img src="https://github.com/dongweiming/wechat-admin/blob/master/screenshots/ios.png" alt="IOS效果" width="240" border="10" /></a>
+<a href="https://vimeo.com/227285498" target="_blank"><img src="https://github.com/dongweiming/wechat-admin/blob/master/screenshots/web.png" alt="Web效果" width="400" border="10" /></a>
 
 ### 欢迎扫码体验：
 <img src="https://github.com/dongweiming/wechat-admin/blob/master/screenshots/chat.png" alt="扫码加群" width="640" border="10" />
