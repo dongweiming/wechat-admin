@@ -84,12 +84,12 @@ def invite(user, pattern):
                 re.search(r'\d+', s).group() + 1)
             new_group = bot.create_group(get_creators(), topic=next_topic)
             new_group.add_members(user, use_invitation=True)
-            group.send_msg('创建 [{}] 成功'.format(next_topic))
+            new_group.send_msg('创建 [{}] 成功'.format(next_topic))
     else:
         next_topic = settings.pattern_map[pattern].format(1)
         new_group = bot.create_group(get_creators(), topic=next_topic)
         new_group.add_members(user, use_invitation=True)
-        group.send_msg('创建 [{}] 成功'.format(next_topic))
+        new_group.send_msg('创建 [{}] 成功'.format(next_topic))
 
 
 @bot.register(msg_types=FRIENDS)
