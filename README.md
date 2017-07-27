@@ -270,6 +270,14 @@ stopped.connect(restart_listener)
 
 解密手机微信API，把这些未开放的API的集成进来不太好，还可能引起法律方面的问题。
 
+### 如何解决「当前登录环境异常。为了你的帐号安全，暂时不能登录web微信...」的问题？
+
+问题可以看这个[issue](https://github.com/Chatie/wechaty/issues/603)，有不少人遇到了，在被封之后没有办法解决。但是可以注意让它尽量不被封。经过这几天的研究，我找到三条经验：
+
+1. 不要只使用Itchat中的[USER_AGENT](https://github.com/littlecodersh/ItChat/blob/master/itchat/config.py#L10)，可以在几个之间切换（注意要不同浏览器的UA），但是不要每次的UA不一样。
+2. 注意在群内的操作不要太频繁，机器人以及自动欢迎之类的慎用，尽量减少你的回应频率。
+3. 如果发现登录后突然弹出验证码，这是一个前兆，要暂停机器人功能，可以停止进程或者选择像用户那样登录网页微信或者Mac微醺客户端一段时间。
+
 ## 感谢
 
 * [vue-admin](https://github.com/taylorchen709/vue-admin)
