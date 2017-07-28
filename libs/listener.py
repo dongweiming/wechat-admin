@@ -149,8 +149,8 @@ def kick(msg):
         return settings.kick_text.format(
             current=current, member=to_kick.nick_name,
             total=settings.kick_quorum_n, period=period)
-    msg.chat.remove_members([to_kick])
     to_kick.set_remark_name('[黑名单]-' + get_time())
+    msg.chat.remove_members([to_kick])
     return '成功移出 @{}'.format(to_kick.nick_name)
 
 
