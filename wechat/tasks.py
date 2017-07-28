@@ -172,7 +172,7 @@ def update_group(update=False):
 @app.task
 def update_mp(update=False):
     with json_api.app_context():
-         _update_mp(bot, update=update)
+        _update_mp(bot, update=update)
 
 
 @periodic_task(run_every=timedelta(seconds=60), time_limit=5)
