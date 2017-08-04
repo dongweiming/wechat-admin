@@ -275,7 +275,7 @@ stopped.connect(restart_listener)
 
 1. 不要只使用Itchat中的[USER_AGENT](https://github.com/littlecodersh/ItChat/blob/master/itchat/config.py#L10)，可以在几个之间切换（注意要不同浏览器的UA），但是不要每次的UA不一样。
 2. 注意在群内的操作不要太频繁，机器人以及自动欢迎之类的慎用，尽量减少你的回应频率。
-3. 如果发现登录后突然弹出验证码，这是一个前兆，要暂停机器人功能，可以停止进程或者选择像用户那样登录网页微信或者Mac微醺客户端一段时间。
+3. 如果发现登录后突然弹出验证码，这是一个前兆，要暂停机器人功能，可以停止进程或者选择像用户那样登录网页微信或者Mac微信客户端一段时间。
 
 ### 出现「Incorrect string value: XXX」这样的错误怎么办？
 
