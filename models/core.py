@@ -8,7 +8,8 @@ from .mixin import BaseMixin
 friendship = db.Table(
     'friends',
     db.Column('user_id', db.String(20), db.ForeignKey('users.id')),
-    db.Column('friend_id', db.String(20), db.ForeignKey('users.id'))
+    db.Column('friend_id', db.String(20), db.ForeignKey('users.id')),
+    mysql_charset='utf8mb4'
 )
 
 
@@ -17,7 +18,8 @@ group_relationship = db.Table(
     db.Column('group_id', db.String(20), db.ForeignKey('groups.id'),
               nullable=False),
     db.Column('user_id', db.String(20), db.ForeignKey('users.id'),
-              nullable=False)
+              nullable=False),
+    mysql_charset='utf8mb4'
 )
 
 mp_relationship = db.Table(
@@ -25,7 +27,8 @@ mp_relationship = db.Table(
     db.Column('mp_id', db.String(20), db.ForeignKey('mps.id'),
               nullable=False),
     db.Column('user_id', db.String(20), db.ForeignKey('users.id'),
-              nullable=False)
+              nullable=False),
+    mysql_charset='utf8mb4'
 )
 
 
@@ -43,6 +46,7 @@ class CoreMixin(BaseMixin):
 
 class User(CoreMixin, db.Model):
     __tablename__ = 'users'
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
     id = db.Column(db.String(20), primary_key=True)  # puid
     sex = db.Column(db.SmallInteger, default=2)
     nick_name = db.Column(db.String(60), index=True)
@@ -99,6 +103,7 @@ class User(CoreMixin, db.Model):
 
 class Group(CoreMixin, db.Model):
     __tablename__ = 'groups'
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
     id = db.Column(db.String(20), primary_key=True)  # puid
     owner_id = db.Column(db.String(20), index=True)
     nick_name = db.Column(db.String(60), index=True)
@@ -132,6 +137,7 @@ class Group(CoreMixin, db.Model):
 
 class MP(CoreMixin, db.Model):
     __tablename__ = 'mps'
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
     id = db.Column(db.String(20), primary_key=True)  # puid
     city = db.Column(db.String(20), default='')
     province = db.Column(db.String(20), default='')

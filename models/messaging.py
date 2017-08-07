@@ -26,6 +26,7 @@ class Notification:
 
 class Log(db.Model):
     __tablename__ = 'logs'
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     operator_id = db.Column(db.Integer)
     operator_type = db.Column(db.SmallInteger)
@@ -42,6 +43,7 @@ class Log(db.Model):
 
 class Message(BaseMixin, db.Model):
     __tablename__ = 'messages'
+    __table_args__ = {'mysql_charset': 'utf8mb4'}
     id = db.Column(db.Integer, primary_key=True)
     group_id = db.Column(db.String(20), default=0, index=True)
     sender_id = db.Column(db.String(20), index=True)
