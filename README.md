@@ -277,15 +277,6 @@ stopped.connect(restart_listener)
 2. 注意在群内的操作不要太频繁，机器人以及自动欢迎之类的慎用，尽量减少你的回应频率。
 3. 如果发现登录后突然弹出验证码，这是一个前兆，要暂停机器人功能，可以停止进程或者选择像用户那样登录网页微信或者Mac微信客户端一段时间。
 
-### 出现「Incorrect string value: XXX」这样的错误怎么办？
-
-通常是MySQL设置的问题，默认的utf8字符集不满足本项目需求，需要在配置文件(例如 ~/.my.cnf)中添加如下一段：
-
-```bash
-[mysqld]
-character_set_server=utf8mb4
-```
-
 ## 感谢
 
 * [vue-admin](https://github.com/taylorchen709/vue-admin)
