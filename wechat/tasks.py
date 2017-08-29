@@ -66,7 +66,7 @@ def _update_group(bot, update=False):
             group = Group.create(id=g.puid, nick_name=g.nick_name,
                                  owner_id=bot.self.puid)
         local_ids = set([u.id for u in group.members])
-        wx_ids = set([u.puid for u in g.members])
+        wx_ids = set([u.puid for u in g.members if u.puid])
         need_add = wx_ids.difference(local_ids)
         if need_add:
             for u in g.members:
