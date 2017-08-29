@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-let base = `${API_URL}/j`;
+let base = '/j';
 
 const request = (url, options={}, method='get') => {
     let key = ~['delete', 'get', 'head'].indexOf(method) ? 'params' : 'data';
@@ -103,6 +103,5 @@ module.exports = {
     addGroup,
     getMsgList,
     readAll,
-    API_URL,
     flushData
 };

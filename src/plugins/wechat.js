@@ -17,7 +17,7 @@ function checkStatus(res, options = {}) {
 }
 
 function eventSourceListener() {
-    let source = new EventSource(`${API_URL}/stream`);
+    let source = new EventSource('/stream');
     let self = this;
     source.addEventListener('login', function(event) {
         let data = JSON.parse(event.data);
@@ -53,7 +53,7 @@ export default {
             data: function() {
                 return {
                     uuid: '',
-                    qrCode: `${API_URL}/static/img/qr_code.gif`,
+                    qrCode: `/static/img/qr_code.gif`,
                     sub_title: 'Scan to log in to WeChat',
                     sub_desc: 'Log in on phone to use WeChat on Web',
                     notificationCount: 0

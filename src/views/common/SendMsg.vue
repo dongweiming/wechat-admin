@@ -27,7 +27,7 @@
     </div>
     <div class="upload">
       <el-upload :on-remove="handleRemove" :file-list="fileList"
-                 :action='API_URL + "/upload"' :on-change="handleChange">
+                 action='/upload' :on-change="handleChange">
         <a class="document"><i class="el-icon-document"></i></a>
       </el-upload>
     </div>
@@ -36,7 +36,7 @@
       <p v-html="emoji(content)" class="content"></p>
       <ul class="el-upload-list el-upload-list--picture" v-if="fileList">
         <li class="el-upload-list__item is-success" v-for="file in fileList">
-          <img :src="[API_URL + '/uploads/' + file.name]" class="el-upload-list__item-thumbnail">
+          <img :src="['/uploads/' + file.name]" class="el-upload-list__item-thumbnail">
           <a class="el-upload-list__item-name">
             <i class="el-icon-document"></i>{{ file.name }}
           </a>
@@ -79,7 +79,7 @@
   import Vue from 'vue'
   import '../../plugins/emoji/src/assets/css/iconfont.css'
   import vueEmoji from '../../plugins/emoji/src/components/emoji.vue'
-  import { getUserList, getAllGroups, sendMessage, API_URL } from '../../api/api';
+  import { getUserList, getAllGroups, sendMessage } from '../../api/api';
 
   Vue.component('msg-item', {
     functional: true,
@@ -99,7 +99,6 @@
 	export default {
 		data() {
       return {
-        API_URL: API_URL,
         content: '',
         showEmoji: false,
         dialogVisible: false,
