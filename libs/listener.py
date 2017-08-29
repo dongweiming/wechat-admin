@@ -223,7 +223,7 @@ for p in PLUGINS:
         if patterns:
             if getattr(plugin, 'exclusive', False):
                 _patterns.extend(patterns)
-            if not re.search(r'{}'.format(patterns), text):
+            if not re.search(r'{}'.format('|'.join(patterns)), text):
                 return
         ex_patterns = getattr(plugin, 'exclude_patterns', None) or []
         ex_patterns = set(_patterns + ex_patterns +
