@@ -6,6 +6,9 @@ class BaseMixin(object):
     def create(cls, **kw):
         session = db.session
         if 'id' in kw:
+            id = kw['id']
+            if not id:
+                return
             obj = session.query(cls).get(kw['id'])
             if obj:
                 return obj
