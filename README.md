@@ -178,10 +178,6 @@ PS: 如果是本地运行，可以不使用gunicorn，直接使用Flask的多线
 
 刷新 http://localhost:8100 就可以看到最新的效果了。
 
-如果希望修改线上/环境的地址，需要修改build/webpack.dev.conf.js或者build/webpack.prod.conf.js中的API_URL的值。
-
-WARN: 每次build会删除static目录，所以收到的内容被会删除，请提前备份！
-
 ### 后端开发
 
 要注意修改表结构，每次都要：
