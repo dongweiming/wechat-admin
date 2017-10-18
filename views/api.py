@@ -1,5 +1,6 @@
 # coding=utf-8
 import os
+import glob
 from flask import Flask, request
 from flask.views import MethodView
 from flask_sqlalchemy import get_debug_queries
@@ -19,6 +20,12 @@ from models.core import User, Group, friendship, group_relationship
 from models.messaging import Message, Notification
 
 PER_PAGE = 20
+here = os.path.abspath(os.path.dirname(__file__))
+
+try:
+    FileNotFoundError
+except NameError:
+    FileNotFoundError = OSError
 
 
 class ApiFlask(Flask):
@@ -94,6 +101,11 @@ def login():
 @json_api.route('/logout', methods=['post'])
 def logout():
     _wx_ctx_stack.pop()
+    for f in glob.glob('{}/*.pkl'.format(here)):
+        try:
+            os.remove(f)
+        except FileNotFoundError:
+            pass
     return {'msg': ''}
 
 
