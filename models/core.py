@@ -52,7 +52,7 @@ class User(CoreMixin, db.Model):
     nick_name = db.Column(db.String(60), index=True)
     signature = db.Column(db.String(512), default='')
     province = db.Column(db.String(20), default='')
-    city = db.Column(db.String(20), default='')
+    city = db.Column(db.String(50), default='')
     groups = db.relationship('Group', secondary=group_relationship,
                              backref='members')
     mps = db.relationship('MP', secondary=mp_relationship,
@@ -139,7 +139,7 @@ class MP(CoreMixin, db.Model):
     __tablename__ = 'mps'
     __table_args__ = {'mysql_charset': 'utf8mb4'}
     id = db.Column(db.String(20), primary_key=True)  # puid
-    city = db.Column(db.String(20), default='')
+    city = db.Column(db.String(50), default='')
     province = db.Column(db.String(20), default='')
     nick_name = db.Column(db.String(60), index=True)
     signature = db.Column(db.String(255), default='')
