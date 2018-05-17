@@ -32,6 +32,8 @@
       </el-table-column> 
 			<el-table-column prop="nick_name" label="昵称" width="150" sortable>
 			</el-table-column>
+			<el-table-column prop="name" label="备注名" width="150" sortable>
+			</el-table-column>
 			<el-table-column prop="sex" label="性别" width="100" :formatter="formatSex" sortable>
 			</el-table-column>
 			<el-table-column prop="province" label="省份" width="100" sortable>

@@ -1,3 +1,4 @@
+# coding: utf-8
 from datetime import timedelta
 from celery.task import periodic_task
 from celery.task.control import revoke
@@ -27,7 +28,7 @@ from models.core import User, Group, MP  # noqa
 from models.messaging import Notification
 
 stopped.connect(restart_listener)
-MP_FIELD = ['nick_name', 'signature', 'province', 'city']
+MP_FIELD = ['nick_name', 'name', 'signature', 'province', 'city']
 USER_FIELD = MP_FIELD + ['sex']
 bot = get_bot()
 

@@ -4,7 +4,7 @@ import glob
 from flask import Flask, request
 from flask.views import MethodView
 from flask_sqlalchemy import get_debug_queries
-from sqlalchemy import and_
+from sqlalchemy import and_, or_
 
 import config
 import views.errors as errors
@@ -131,8 +131,13 @@ class UsersAPI(MethodView):
                 }
             if q:
                 users = query(User).outerjoin(
-                    friendship, friendship.c.user_id == User.id).filter(and_(
-                        User.nick_name.like('%{}%'.format(q)),
+                    friendship, friendship.c.user_id == User.id).filter(
+                    and_(or_(
+                        User.name.like('%{}%'.format(q)),
+                        User.signature.like('%{}%'.format(q)),
+                        User.city.like('%{}%'.format(q)),
+                        User.province.like('%{}%'.format(q)),
+                        User.nick_name.like('%{}%'.format(q))),
                         friendship.c.friend_id == user.id)
                 )
             else:
@@ -149,8 +154,12 @@ class UsersAPI(MethodView):
             if q:
                 users = query(User).outerjoin(
                     group_relationship,
-                    group_relationship.c.user_id == User.id).filter(and_(
-                        User.nick_name.like('%{}%'.format(q)),
+                    group_relationship.c.user_id == User.id).filter(and_(or_(
+                        User.name.like('%{}%'.format(q)),
+                        User.signature.like('%{}%'.format(q)),
+                        User.city.like('%{}%'.format(q)),
+                        User.province.like('%{}%'.format(q)),
+                        User.nick_name.like('%{}%'.format(q))),
                         group_relationship.c.group_id == group.id)
                 )
                 total = users.count()

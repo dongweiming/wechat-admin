@@ -1,13 +1,19 @@
+# coding: utf-8
 # TODO:
 # 1. puid过期后顺便也删掉对应的头像
 
 import os
 from datetime import datetime, timedelta
 
+from gunicorn._compat import FileNotFoundError
 from itchat.signals import scan_qr_code, confirm_login, logged_out
 
 from ext import sse
 from config import avatar_tmpl
+try:
+    FileNotFoundError
+except NameError:
+    FileNotFoundError = OSError
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -53,7 +59,7 @@ def get_logged_in_user(bot):
     url, path, need_update = gen_avatar_path(id, force=True)
     try:
         bot.core.get_head_img(picDir=path)
-    except FileNotFoundError:
+    except (FileNotFoundError, IOError) as e:
         os.mkdir(os.path.dirname(path))
         bot.core.get_head_img(picDir=path)
     user = {
